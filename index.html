@@ -156,6 +156,81 @@
   .stato button[aria-pressed="true"]{background:var(--blocco);color:var(--su-blocco)}
   .stato button.bye[aria-pressed="true"]{background:var(--muted);color:var(--su-muted)}
 
+  /* --- la gara: una fila di partite da chiamare --- */
+  .stato-gara{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 4px}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--blocco);color:var(--su-blocco);
+    border-radius:999px;padding:9px 16px;font:600 14px var(--font-sans);min-height:44px}
+  .pill b{color:var(--evidenza);font:800 17px var(--font-display);font-variant-numeric:tabular-nums}
+  .titoloGara{font:800 clamp(20px,4.6vw,26px) var(--font-display);letter-spacing:-.02em;
+    margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .titoloGara small{font:600 13px var(--font-sans);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+  .fila{display:grid;grid-template-columns:1fr;gap:10px}
+  @media (min-width:760px){.fila{grid-template-columns:1fr 1fr}}
+  .incontro{background:var(--paper);border-radius:var(--radius);padding:12px 14px 14px;
+    display:flex;flex-direction:column}
+  .incontro .capo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+  .numP{background:var(--blocco);color:var(--evidenza);border-radius:12px;padding:4px 11px;
+    font:800 17px var(--font-display);font-variant-numeric:tabular-nums}
+  .girone{font:600 11px var(--font-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .sfidante{display:flex;align-items:center;gap:12px;background:var(--scanalatura);border:0;
+    border-radius:18px;padding:12px 14px;min-height:74px;width:100%;text-align:left}
+  .sfidante .pos{flex:none;width:32px;height:32px;border-radius:50%;background:var(--blocco);
+    color:var(--su-blocco);display:grid;place-items:center;font:800 14px var(--font-display)}
+  .sfidante .gg{font:800 clamp(22px,5.4vw,28px)/1.1 var(--font-display);letter-spacing:-.02em;
+    flex:1;min-width:0}
+  .sfidante .gg small{font:600 .52em/1 var(--font-sans);letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+  .sfidante .vv{flex:none;font:600 11px var(--font-sans);letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);border:2px solid var(--filo);border-radius:999px;padding:7px 11px}
+  .sfidante:active{background:var(--blocco);color:var(--su-blocco)}
+  .sfidante:active .vv{border-color:var(--su-blocco);color:var(--su-blocco)}
+  .contro{font:600 11px var(--font-sans);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+    text-align:center;padding:5px 0}
+
+  .fatte{display:grid;gap:8px}
+  .esito-riga{display:flex;align-items:center;gap:12px;background:var(--carta-fatta);border-radius:16px;
+    padding:10px 14px;min-height:58px}
+  .esito-riga.ufficio{background:var(--carta-spenta)}
+  .esito-riga .q{flex:none;min-width:38px;height:30px;border-radius:999px;background:var(--scanalatura);
+    color:var(--muted);display:grid;place-items:center;font:700 13px var(--font-sans)}
+  .esito-riga .t{flex:1;min-width:0;font:700 16px/1.3 var(--font-display)}
+  .esito-riga .t em{font-style:normal;font-weight:600;color:var(--muted)}
+  .esito-riga .x{flex:none;font:600 12px var(--font-sans);color:var(--muted);background:transparent;
+    border:2px solid var(--filo);border-radius:999px;padding:8px 13px;min-height:40px}
+  .esito-riga .tag{flex:none;font:600 10px var(--font-sans);letter-spacing:.1em;text-transform:uppercase;
+    color:var(--su-muted);background:var(--muted);border-radius:999px;padding:6px 10px}
+  .esito-riga.chiede{display:block;background:var(--blocco);color:var(--su-blocco);padding:14px}
+  .esito-riga.chiede p{font:600 15px/1.45 var(--font-sans);margin-bottom:10px}
+  .esito-riga.chiede .scelte{display:flex;gap:8px;flex-wrap:wrap}
+  .esito-riga.chiede button{border:2px solid var(--su-blocco);background:transparent;color:var(--su-blocco);
+    border-radius:999px;padding:0 16px;min-height:44px;font:600 14px var(--font-sans)}
+  .esito-riga.chiede button.si{background:var(--evidenza);border-color:var(--evidenza);color:var(--blocco)}
+
+  .nota{background:var(--carta-spenta);border-radius:18px;padding:13px 16px;
+    font:500 14px/1.5 var(--font-sans);color:var(--muted)}
+  .nota b{color:var(--ink);font-weight:700}
+
+  .classifica{display:grid;gap:7px}
+  .posto{display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:14px;
+    padding:9px 14px;min-height:52px}
+  .posto .pp{flex:none;min-width:46px;font:800 17px var(--font-display);color:var(--muted)}
+  .posto .nn{font:700 17px var(--font-display);letter-spacing:-.01em}
+  .posto.oro{background:var(--blocco);color:var(--su-blocco)}
+  .posto.oro .pp{color:var(--evidenza)}
+
+  .vinta{background:var(--blocco);color:var(--su-blocco);border-radius:var(--radius);
+    padding:26px 24px;margin:14px 0;text-align:center}
+  .vinta small{display:block;font:600 12px var(--font-sans);letter-spacing:.16em;text-transform:uppercase;
+    color:var(--evidenza);margin-bottom:8px}
+  .vinta b{font:800 clamp(34px,9vw,64px)/1 var(--font-display);letter-spacing:-.03em}
+
+  .dopo{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+  .dopo button{background:transparent;border:2px solid var(--ink);border-radius:999px;padding:0 18px;
+    min-height:46px;font:600 14px var(--font-sans)}
+  body.inGara .barra{display:none}
+  body.inGara .conta{display:none}   /* presenti e bye: conta prima del via, non dopo */
+  body.inGara .pagina{padding-bottom:40px}
+
   /* --- il piede: installazione e firma --- */
   .piede{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
   .installa{display:inline-flex;align-items:center;gap:10px;background:transparent;
@@ -171,7 +246,7 @@
   .firma a:active{color:var(--ink);border-bottom-color:var(--ink)}
 
   /* --- la barra con il pulsantone, sempre a portata di pollice --- */
-  body.conCoppie .pagina{padding-bottom:210px}
+  body.conCoppie .pagina{padding-bottom:265px}
   .barra{
     position:fixed;left:0;right:0;bottom:0;z-index:5;background:linear-gradient(transparent,var(--bg) 26%);
     padding:24px max(16px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
@@ -399,6 +474,33 @@
     <div class="coppie" id="coppie"></div>
   </section>
 
+  <!-- ===== schermata 3: la gara ===== -->
+  <section id="vistaGara" hidden>
+    <div class="stato-gara">
+      <span class="pill">Doppio K.O. · <b id="garaConta">0</b> di 31</span>
+      <span class="pill">In gara <b id="garaVivi">16</b></span>
+    </div>
+
+    <div class="vinta" id="garaVinta" hidden></div>
+
+    <h2 class="titoloGara" id="tDaChiamare">Da chiamare <small>in ordine · tocca chi ha vinto</small></h2>
+    <div class="fila" id="garaPronte"></div>
+    <p class="nota" id="garaNessuna" hidden>Nessuna coppia pronta: aspetta i risultati di quelle in corso.</p>
+
+    <h2 class="titoloGara" id="tFatte">Fatte</h2>
+    <div class="fatte" id="garaStoria"></div>
+
+    <h2 class="titoloGara" id="tDaFormare">Ancora da formare</h2>
+    <p class="nota" id="garaDaFormare"></p>
+
+    <h2 class="titoloGara">Classifica</h2>
+    <div class="classifica" id="garaClassifica"></div>
+
+    <div class="dopo">
+      <button type="button" id="chiudiGara">Chiudi la gara</button>
+    </div>
+  </section>
+
   <footer class="piede">
     <button class="installa" type="button" id="installa" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -447,6 +549,8 @@
 
   /* --------------------------------------------------------- i giocatori - */
   var giocatori = carica();
+  var ultimaEstrazione = null;      /* l'ultimo sorteggio, per entrare in gara */
+  var modoAvvia = 'estrai';         /* cosa fa il pulsantone: estrai o inizia */
 
   function vuoti(n){
     var a = [];
@@ -740,8 +844,8 @@
     document.body.classList.add('conCoppie');
     window.scrollTo(0, 0);
 
-    document.getElementById('etichettaAvvia').textContent = 'Rifai l\'estrazione';
-    mettiTornaIndietro();
+    ultimaEstrazione = esito;
+    piediCoppie();
   }
 
   function nomeGrande(g){
@@ -758,27 +862,59 @@
     return s;
   }
 
-  function mettiTornaIndietro(){
-    if(document.getElementById('torna')) return;
+  /* Dopo l'estrazione il passo naturale e' entrare in gara; rifare il
+     sorteggio e tornare ai nomi restano due vie secondarie, scritte sotto
+     il pulsantone. Il tabellone e' da 16: con meno caselle non si parte. */
+  function piediCoppie(){
+    var dentro = document.querySelector('.barra .dentro');
+    viaICollegamenti();
+
+    var pronti = giocatori.length === 16;
+    modoAvvia = pronti ? 'inizia' : 'estrai';
+    document.getElementById('etichettaAvvia').textContent =
+      pronti ? 'Inizia la gara' : 'Rifai l\'estrazione';
+    document.getElementById('avviso').textContent = pronti ? '' :
+      'Il tabellone e\' da 16 caselle, qui i giocatori sono ' + giocatori.length +
+      '. Porta il numero a 16 e segna come bye chi non c\'e\'.';
+
+    if(pronti){
+      dentro.appendChild(collegamento('Rifai l\'estrazione', function(){
+        var e = estrai();
+        contoAllaRovescia(function(){ mostraCoppie(e); });
+      }));
+    }
+    dentro.appendChild(collegamento('Modifica i giocatori', tornaAiNomi));
+  }
+
+  function collegamento(testo, cosa){
     var b = document.createElement('button');
-    b.id = 'torna'; b.type = 'button';
-    b.textContent = 'Modifica i giocatori';
+    b.type = 'button'; b.className = 'sotto-barra';
+    b.textContent = testo;
     b.style.cssText = 'display:block;margin:12px auto 0;background:transparent;border:0;' +
                       'font:600 16px var(--font-sans);color:var(--muted);min-height:44px;' +
                       'text-decoration:underline;text-underline-offset:4px';
-    b.addEventListener('click', function(){
-      document.getElementById('vistaCoppie').hidden = true;
-      document.getElementById('vistaElenco').hidden = false;
-      document.body.classList.remove('conCoppie');
-      document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
-      b.remove();
-      window.scrollTo(0, 0);
-    });
-    document.querySelector('.barra .dentro').appendChild(b);
+    b.addEventListener('click', cosa);
+    return b;
+  }
+  function viaICollegamenti(){
+    var vecchi = document.querySelectorAll('.barra .sotto-barra');
+    for(var i = 0; i < vecchi.length; i++) vecchi[i].remove();
+  }
+
+  function tornaAiNomi(){
+    document.getElementById('vistaCoppie').hidden = true;
+    document.getElementById('vistaElenco').hidden = false;
+    document.body.classList.remove('conCoppie');
+    modoAvvia = 'estrai';
+    document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
+    viaICollegamenti();
+    disegnaElenco();
+    window.scrollTo(0, 0);
   }
 
   /* ------------------------------------------------------------ il via --- */
   document.getElementById('avvia').addEventListener('click', function(){
+    if(modoAvvia === 'inizia'){ iniziaGara(); return; }
     var esito = estrai();
     contoAllaRovescia(function(){ mostraCoppie(esito); });
   });
@@ -797,6 +933,413 @@
 
   document.getElementById('nomiDaCapo').addEventListener('click', function(){
     giocatori = vuoti(giocatori.length); salva(); disegnaElenco();
+  });
+
+
+  /* =====================================================================
+     LA GARA — tabellone a doppio K.O. da 16
+
+     Le 31 caselle sono il foglio FIGeST, con una sola differenza voluta:
+     la finale e' doppia, cioe' chi arriva dal girone perdenti deve battere
+     due volte chi arriva dai vincenti. Da qui la casella 31, la bella, che
+     si gioca solo se serve.
+
+     Dentro ogni casella: "a" e' il posto sopra, "b" quello sotto.
+       ['S',i]  il giocatore i dell'estrazione, da 0 a 15
+       ['V',n]  chi vince la partita n
+       ['P',n]  chi perde la partita n
+       posto    dove finisce chi perde questa partita, se esce di torneo
+
+     Nessuna casella dipende da una con numero piu' alto, quindi per sapere
+     chi sta dove basta scorrerle una volta in ordine.
+     ===================================================================== */
+  var CHIAVE_GARA = 'estrazione-torneo:gara';
+
+  var PARTITE = [
+    {n:1,  a:['S',0],  b:['S',1],  g:'Primo turno'},
+    {n:2,  a:['S',2],  b:['S',3],  g:'Primo turno'},
+    {n:3,  a:['S',4],  b:['S',5],  g:'Primo turno'},
+    {n:4,  a:['S',6],  b:['S',7],  g:'Primo turno'},
+    {n:5,  a:['S',8],  b:['S',9],  g:'Primo turno'},
+    {n:6,  a:['S',10], b:['S',11], g:'Primo turno'},
+    {n:7,  a:['S',12], b:['S',13], g:'Primo turno'},
+    {n:8,  a:['S',14], b:['S',15], g:'Primo turno'},
+
+    {n:9,  a:['P',1],  b:['P',2],  g:'Perdenti', posto:13},
+    {n:10, a:['P',3],  b:['P',4],  g:'Perdenti', posto:13},
+    {n:11, a:['P',5],  b:['P',6],  g:'Perdenti', posto:13},
+    {n:12, a:['P',7],  b:['P',8],  g:'Perdenti', posto:13},
+
+    {n:13, a:['V',1],  b:['V',2],  g:'Vincenti'},
+    {n:14, a:['V',3],  b:['V',4],  g:'Vincenti'},
+    {n:15, a:['V',5],  b:['V',6],  g:'Vincenti'},
+    {n:16, a:['V',7],  b:['V',8],  g:'Vincenti'},
+
+    /* l'incrocio: il perdente della 16 scende in cima, quello della 13 in
+       fondo, cosi' non si rigioca subito la partita appena persa */
+    {n:17, a:['V',9],  b:['P',16], g:'Perdenti', posto:9},
+    {n:18, a:['V',10], b:['P',15], g:'Perdenti', posto:9},
+    {n:19, a:['V',11], b:['P',14], g:'Perdenti', posto:9},
+    {n:20, a:['V',12], b:['P',13], g:'Perdenti', posto:9},
+
+    {n:21, a:['V',17], b:['V',18], g:'Perdenti', posto:7},
+    {n:22, a:['V',19], b:['V',20], g:'Perdenti', posto:7},
+
+    {n:23, a:['V',13], b:['V',14], g:'Vincenti'},
+    {n:24, a:['V',15], b:['V',16], g:'Vincenti'},
+
+    {n:25, a:['V',21], b:['P',23], g:'Perdenti', posto:5},
+    {n:26, a:['V',22], b:['P',24], g:'Perdenti', posto:5},
+    {n:27, a:['V',25], b:['V',26], g:'Perdenti', posto:4},
+
+    {n:28, a:['V',23], b:['V',24], g:'Finale vincenti'},
+    {n:29, a:['V',27], b:['P',28], g:'Finale perdenti', posto:3},
+
+    {n:30, a:['V',28], b:['V',29], g:'Finale'},
+    {n:31, a:['V',28], b:['V',29], g:'Bella'}
+  ];
+
+  /* chi dipende da chi, per sapere cosa cade quando si annulla un risultato */
+  var CONSUMA = {};
+  PARTITE.forEach(function(P){
+    [P.a, P.b].forEach(function(da){
+      if(da[0] === 'S') return;
+      (CONSUMA[da[1]] = CONSUMA[da[1]] || []).push(P.n);
+    });
+  });
+  CONSUMA[30] = CONSUMA[30] || [];
+  CONSUMA[30].push(31);          /* la bella esiste solo per via della 30 */
+
+  var gara = leggiGara();
+
+  function leggiGara(){
+    try{
+      var g = JSON.parse(localStorage.getItem(CHIAVE_GARA));
+      if(g && g.ordine && g.ordine.length === 16 && g.esiti) return g;
+    }catch(e){}
+    return null;
+  }
+  function salvaGara(){
+    try{
+      if(gara) localStorage.setItem(CHIAVE_GARA, JSON.stringify(gara));
+      else localStorage.removeItem(CHIAVE_GARA);
+    }catch(e){}
+  }
+
+  function bellaServe(){ return !!gara.esiti[30] && gara.esiti[30].v === 'b'; }
+  function altroLato(l){ return l === 'a' ? 'b' : 'a'; }
+
+  /* Chi sta in ogni casella, piu' i bye risolti d'ufficio man mano. */
+  function ricostruisci(){
+    var dentro = {};
+    if(!bellaServe()) delete gara.esiti[31];
+    PARTITE.forEach(function(P){
+      if(P.n === 31 && !bellaServe()){ dentro[31] = {a:null, b:null}; return; }
+      var a = occupante(P.a, dentro), b = occupante(P.b, dentro);
+      dentro[P.n] = {a:a, b:b};
+      if(a === null || b === null || gara.esiti[P.n]) return;
+      var ba = gara.ordine[a].bye, bb = gara.ordine[b].bye;
+      if(ba || bb){
+        /* due bye: vince quello sopra. Un bye solo: vince chi c'e' davvero. */
+        gara.esiti[P.n] = { v: (ba && bb) ? 'a' : (ba ? 'b' : 'a'), u:true, q:gara.passo++ };
+      }
+    });
+    return dentro;
+  }
+  function occupante(da, dentro){
+    if(da[0] === 'S') return da[1];
+    var e = gara.esiti[da[1]], c = dentro[da[1]];
+    if(!e || !c) return null;
+    var lato = (da[0] === 'V') ? e.v : altroLato(e.v);
+    return c[lato];
+  }
+
+  function nomeDiSlot(i){ return gara.ordine[i].nome || ('Giocatore ' + (i + 1)); }
+  function etichetta(i){
+    var s = document.createElement('span');
+    s.className = 'gg';
+    s.textContent = nomeDiSlot(i);
+    if(gara.ordine[i].bye){
+      var t = document.createElement('small');
+      t.textContent = '(bye)';
+      s.appendChild(document.createTextNode(' '));
+      s.appendChild(t);
+    }
+    return s;
+  }
+  function nomeEBye(i){ return nomeDiSlot(i) + (gara.ordine[i].bye ? ' (bye)' : ''); }
+
+  /* --------------------------------------------------- i risultati --- */
+  function segna(n, lato){
+    gara.esiti[n] = { v:lato, u:false, q:gara.passo++ };
+    salvaGara(); disegnaGara();
+  }
+
+  function aCascata(n){
+    var visti = {}, coda = [n], fuori = [];
+    while(coda.length){
+      var x = coda.pop();
+      (CONSUMA[x] || []).forEach(function(m){
+        if(visti[m]) return;
+        visti[m] = true;
+        if(gara.esiti[m]) fuori.push(m);
+        coda.push(m);
+      });
+    }
+    return fuori.sort(function(a, b){ return a - b; });
+  }
+
+  function annulla(n){
+    delete gara.esiti[n];
+    aCascata(n).forEach(function(m){ delete gara.esiti[m]; });
+    salvaGara(); disegnaGara();
+  }
+
+  /* --------------------------------------------------- la classifica -- */
+  function piazzamenti(dentro){
+    var fuori = [];
+    PARTITE.forEach(function(P){
+      if(!P.posto) return;
+      var e = gara.esiti[P.n];
+      if(!e) return;
+      var perdente = dentro[P.n][altroLato(e.v)];
+      if(perdente !== null && perdente !== undefined) fuori.push({posto:P.posto, chi:perdente});
+    });
+    var ultima = gara.esiti[31] ? 31 : ((gara.esiti[30] && gara.esiti[30].v === 'a') ? 30 : 0);
+    if(ultima){
+      var e = gara.esiti[ultima], c = dentro[ultima];
+      fuori.push({posto:1, chi:c[e.v]});
+      fuori.push({posto:2, chi:c[altroLato(e.v)]});
+    }
+    fuori.sort(function(x, y){ return x.posto - y.posto; });
+    return fuori;
+  }
+
+  function finita(){
+    return !!gara.esiti[30] && (gara.esiti[30].v === 'a' || !!gara.esiti[31]);
+  }
+
+  /* --------------------------------------------------- il disegno ----- */
+  function disegnaGara(){
+    var dentro = ricostruisci();
+    salvaGara();
+
+    var fatte = [], pronte = [], sconfitte = {};
+    PARTITE.forEach(function(P){
+      var c = dentro[P.n], e = gara.esiti[P.n];
+      if(e){
+        fatte.push(P);
+        var perdente = c[altroLato(e.v)];
+        if(perdente !== null && perdente !== undefined){
+          sconfitte[perdente] = (sconfitte[perdente] || 0) + 1;
+        }
+      }else if(c && c.a !== null && c.b !== null){
+        pronte.push(P);
+      }
+    });
+
+    var vivi = 0;
+    for(var i = 0; i < 16; i++) if((sconfitte[i] || 0) < 2) vivi++;
+
+    document.getElementById('garaConta').textContent = String(fatte.length);
+    document.getElementById('garaVivi').textContent = String(vivi);
+
+    /* --- da chiamare --- */
+    var dove = document.getElementById('garaPronte');
+    dove.innerHTML = '';
+    pronte.forEach(function(P){
+      var c = dentro[P.n];
+      var box = document.createElement('div');
+      box.className = 'incontro';
+
+      var capo = document.createElement('div');
+      capo.className = 'capo';
+      capo.innerHTML = '<span class="numP">' + P.n + '</span>' +
+                       '<span class="girone">' + P.g + '</span>';
+      box.appendChild(capo);
+
+      ['a', 'b'].forEach(function(lato, k){
+        if(k === 1){
+          var vs = document.createElement('p');
+          vs.className = 'contro'; vs.textContent = 'contro';
+          box.appendChild(vs);
+        }
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sfidante';
+        var pos = document.createElement('span');
+        pos.className = 'pos'; pos.textContent = String(c[lato] + 1);
+        var v = document.createElement('span');
+        v.className = 'vv'; v.textContent = 'vince';
+        b.appendChild(pos);
+        b.appendChild(etichetta(c[lato]));
+        b.appendChild(v);
+        b.addEventListener('click', function(){ segna(P.n, lato); });
+        box.appendChild(b);
+      });
+
+      dove.appendChild(box);
+    });
+    document.getElementById('garaNessuna').hidden = pronte.length > 0;
+    document.getElementById('tDaChiamare').hidden = finita();
+
+    /* --- fatte, la piu' recente in cima --- */
+    var storia = document.getElementById('garaStoria');
+    storia.innerHTML = '';
+    fatte.slice().sort(function(x, y){ return gara.esiti[y.n].q - gara.esiti[x.n].q; })
+         .forEach(function(P){
+      var e = gara.esiti[P.n], c = dentro[P.n];
+      var vinto = c[e.v], perso = c[altroLato(e.v)];
+      var riga = document.createElement('div');
+      riga.className = 'esito-riga' + (e.u ? ' ufficio' : '');
+      riga.innerHTML = '<span class="q">' + P.n + '</span>';
+
+      var t = document.createElement('span');
+      t.className = 't';
+      if(e.u){
+        t.innerHTML = '<b>' + nomeEBye(vinto) + '</b> <em>passa:</em> ' +
+                      nomeEBye(perso) + ' <em>perde</em>';
+      }else{
+        t.innerHTML = '<b>' + nomeEBye(vinto) + '</b> <em>batte</em> ' + nomeEBye(perso);
+      }
+      riga.appendChild(t);
+
+      if(e.u){
+        var tag = document.createElement('span');
+        tag.className = 'tag'; tag.textContent = "d'ufficio";
+        riga.appendChild(tag);
+      }else{
+        var x = document.createElement('button');
+        x.type = 'button'; x.className = 'x'; x.textContent = 'annulla';
+        x.addEventListener('click', function(){ chiediAnnulla(P.n, riga); });
+        riga.appendChild(x);
+      }
+      storia.appendChild(riga);
+    });
+    document.getElementById('tFatte').innerHTML =
+      'Fatte <small>' + fatte.length + (fatte.length ? ' · tocca annulla per correggere' : '') + '</small>';
+    storia.hidden = fatte.length === 0;
+
+    /* --- ancora da formare --- */
+    var daFormare = 31 - fatte.length - pronte.length;
+    var tf = document.getElementById('tDaFormare'), nf = document.getElementById('garaDaFormare');
+    if(finita() || daFormare <= 0){
+      tf.hidden = true; nf.hidden = true;
+    }else{
+      tf.hidden = false; nf.hidden = false;
+      tf.innerHTML = 'Ancora da formare <small>' + daFormare +
+                     (daFormare === 1 ? ' partita' : ' partite') + '</small>';
+      var prossima = null;
+      for(var j = 0; j < PARTITE.length; j++){
+        var Q = PARTITE[j], cc = dentro[Q.n];
+        if(!gara.esiti[Q.n] && cc && (cc.a === null || cc.b === null)){ prossima = Q; break; }
+      }
+      nf.innerHTML = prossima
+        ? 'La <b>' + prossima.n + '</b> aspetta ' + descrivi(prossima.a) + ' e ' +
+          descrivi(prossima.b) + '. Compare qui sopra appena si conoscono tutti e due i nomi.'
+        : 'Si aspettano i risultati di quelle in corso.';
+    }
+
+    /* --- chi ha vinto --- */
+    var vinta = document.getElementById('garaVinta');
+    var classifica = piazzamenti(dentro);
+    if(finita()){
+      var primo = classifica.filter(function(x){ return x.posto === 1; })[0];
+      vinta.hidden = false;
+      vinta.innerHTML = '<small>Ha vinto il torneo</small><b>' +
+                        (primo ? nomeEBye(primo.chi) : '') + '</b>';
+    }else{
+      vinta.hidden = true;
+    }
+
+    /* --- la classifica --- */
+    var cl = document.getElementById('garaClassifica');
+    cl.innerHTML = '';
+    if(!classifica.length){
+      var vuota = document.createElement('p');
+      vuota.className = 'nota';
+      vuota.textContent = 'Si riempie man mano: il primo piazzamento arriva con le partite 9, 10, 11 e 12.';
+      cl.appendChild(vuota);
+    }else{
+      classifica.forEach(function(r){
+        var riga = document.createElement('div');
+        riga.className = 'posto' + (r.posto === 1 ? ' oro' : '');
+        riga.innerHTML = '<span class="pp">' + r.posto + '°</span>' +
+                         '<span class="nn">' + nomeEBye(r.chi) + '</span>';
+        cl.appendChild(riga);
+      });
+    }
+  }
+
+  function descrivi(da){
+    if(da[0] === 'S') return 'il sorteggio';
+    return (da[0] === 'V' ? 'il vincente' : 'il perdente') + ' della ' + da[1];
+  }
+
+  /* --------------------------------------------- annullare per davvero -
+     Si puo' annullare tutto, ma se quel risultato ha gia' prodotto altre
+     partite l'app lo dice prima: al bar gli sbagli si scoprono tardi, e
+     un'app che dice di no quando hai davvero sbagliato e' peggio.        */
+  function chiediAnnulla(n, riga){
+    var cadono = aCascata(n);
+    if(!cadono.length){ annulla(n); return; }
+    riga.className = 'esito-riga chiede';
+    riga.innerHTML = '';
+    var p = document.createElement('p');
+    p.textContent = 'Annullando la ' + n + ' si cancella anche ' +
+      (cadono.length === 1 ? 'la ' + cadono[0] : 'le partite ' + cadono.join(', ')) + '.';
+    var scelte = document.createElement('div');
+    scelte.className = 'scelte';
+    var si = document.createElement('button');
+    si.type = 'button'; si.className = 'si'; si.textContent = 'Annulla lo stesso';
+    si.addEventListener('click', function(){ annulla(n); });
+    var no = document.createElement('button');
+    no.type = 'button'; no.textContent = 'Lascia stare';
+    no.addEventListener('click', function(){ disegnaGara(); });
+    scelte.appendChild(si); scelte.appendChild(no);
+    riga.appendChild(p); riga.appendChild(scelte);
+  }
+
+  /* --------------------------------------------------- entrare e uscire */
+  function iniziaGara(){
+    if(!ultimaEstrazione || ultimaEstrazione.coppie.length !== 8) return;
+    var ordine = [];
+    ultimaEstrazione.coppie.forEach(function(c){
+      ordine.push({ nome:c.uno.nome, bye:c.uno.bye });
+      ordine.push({ nome:c.due.nome, bye:c.due.bye });
+    });
+    gara = { ordine:ordine, esiti:{}, passo:1 };
+    salvaGara();
+    mostraGara();
+  }
+
+  function mostraGara(){
+    document.getElementById('vistaElenco').hidden = true;
+    document.getElementById('vistaCoppie').hidden = true;
+    document.getElementById('vistaGara').hidden = false;
+    document.body.classList.remove('conCoppie');
+    document.body.classList.add('inGara');
+    disegnaGara();
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('chiudiGara').addEventListener('click', function(){
+    var b = this;
+    if(b.dataset.sicuro !== '1'){
+      b.dataset.sicuro = '1';
+      b.textContent = 'Sicuro? La gara si cancella';
+      setTimeout(function(){ b.dataset.sicuro = ''; b.textContent = 'Chiudi la gara'; }, 4000);
+      return;
+    }
+    gara = null; salvaGara();
+    document.getElementById('vistaGara').hidden = true;
+    document.getElementById('vistaElenco').hidden = false;
+    document.body.classList.remove('inGara');
+    b.dataset.sicuro = ''; b.textContent = 'Chiudi la gara';
+    modoAvvia = 'estrai';
+    document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
+    disegnaElenco();
+    window.scrollTo(0, 0);
   });
 
   /* ------------------------------------------------- installa in tasca -
@@ -882,6 +1425,7 @@
 
   salva();          /* travasa subito la lista vecchia sulla chiave nuova */
   disegnaElenco();
+  if(gara) mostraGara();   /* una gara aperta si riprende da dov'era */
 })();
 </script>
 </body>

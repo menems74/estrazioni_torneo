@@ -15,6 +15,32 @@ registrazione e niente connessione obbligatoria.
    compaiono le partite.
 4. L'organizzatore chiama le coppie una alla volta e tocca la partita
    quando l'ha chiamata, così non perde il segno.
+5. Con sedici caselle piene compare **Inizia la gara**, che porta i
+   giocatori nel tabellone a doppio K.O.
+
+## La gara
+
+Il tabellone è quello federale da 16 a doppio K.O. — si esce alla seconda
+sconfitta — con una differenza voluta: la finale è doppia, cioè chi arriva
+dal girone perdenti deve battere due volte chi arriva dai vincenti. In
+tutto 30 partite, 31 se serve la bella.
+
+La schermata è una fila sola: le partite con le coppie già formate, in
+ordine di chiamata. Si tocca il nome di chi ha vinto e la partita scende
+fra le fatte; appena un risultato completa una coppia nuova, quella
+compare in cima alla fila. L'app non sa quanti tabelloni ha il locale:
+chi ne ha uno chiama la prima partita, chi ne ha quattro chiama le prime
+quattro.
+
+I **bye** sono giocatori a tutti gli effetti, ma perdono d'ufficio: la
+loro partita non scende mai al bersaglio, l'app la chiude da sola e lo
+scrive. Se due bye si incontrano passa quello sopra, che perderà
+d'ufficio anche la partita seguente.
+
+Un risultato sbagliato si annulla. Se ha già prodotto altre partite l'app
+lo dice prima — «annullando la 1 si cancella anche la 9 e la 13» — e
+aspetta conferma. La gara si salva a ogni tocco: se il telefono si spegne
+o si chiude il browser, alla riapertura riprende da dov'era.
 
 In alto a sinistra ci sono due tasti, **Chiaro** e **Scuro**: il primo è il
 vestito da giorno (carta e rosso), il secondo quello da sera (blu notte e
