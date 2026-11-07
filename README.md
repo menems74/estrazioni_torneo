@@ -6,9 +6,8 @@ registrazione e niente connessione obbligatoria.
 
 **Si usa qui:** <https://menems74.github.io/estrazioni_torneo/>
 
-All'apertura si sceglie che torneo organizzare. Per ora ce n'è uno solo
-pronto, il **tabellone da 16 a doppio K.O.**; il **girone all'italiana**
-è in prova e si accende da un indirizzo apposta (vedi più sotto).
+All'apertura si sceglie che torneo organizzare: **tabellone da 16 a
+doppio K.O.** oppure **girone all'italiana**.
 
 ## Come funziona
 
@@ -87,7 +86,7 @@ privata — compare una fascia rossa in cima invece di tacere. Ogni gara
 salvata porta scritto il formato e la versione con cui è nata, così una
 gara di domani non viene letta con le regole di ieri.
 
-## Il girone all'italiana — in prova
+## Il girone all'italiana
 
 Tutti contro tutti, una partita per coppia, da tre a sedici giocatori.
 Vittoria 2 punti, sconfitta 0, nessun pareggio: alle freccette una
@@ -99,18 +98,10 @@ L'ordine delle partite non è casuale: si usa il metodo del cerchio,
 quello dei calendari dei campionati. Dentro ogni turno nessuno gioca due
 volte, e con un numero dispari di giocatori a ogni turno uno riposa.
 
-È **ancora una prova** e le regole si possono cambiare, quindi nella
-schermata di scelta il tasto è spento per tutti. Si accende aprendo una
-volta sola questo indirizzo:
-
-```
-https://menems74.github.io/estrazioni_torneo/#girone
-```
-
-Da lì in avanti quell'apparecchio se lo ritrova acceso nella schermata di
-scelta, senza bisogno del link. Il girone si salva da solo come il
-tabellone, ma copia su file e passaggio a un altro apparecchio per ora
-valgono solo per il tabellone da 16.
+Il girone si salva da solo a ogni tocco come il tabellone; copia su file
+e passaggio a un altro apparecchio per ora valgono solo per il tabellone
+da 16. L'indirizzo che finisce con `#girone` resta una scorciatoia per
+entrarci senza passare dalla schermata di scelta.
 
 ## Installarla sul telefono
 

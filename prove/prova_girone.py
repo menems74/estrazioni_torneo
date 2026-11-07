@@ -44,26 +44,29 @@ def _vince_prima(a):
     a.pg.wait_for_timeout(340)
 
 
-def il_tasto_e_spento(ctx, sito, dire):
+def dalla_scelta(ctx, sito, dire):
     a = App(ctx, sito, formato=None)
     assert a.vista() == "scelta", a.vista()
-    tasto = a.pg.locator("#scegliGirone")
-    assert tasto.is_disabled(), "il girone non doveva essere ancora cliccabile"
-    assert "16 giocatori" in a.pg.locator("#etiGirone").inner_text().lower()
+    assert a.pg.locator("#scegliGirone").is_enabled(), "il girone deve essere cliccabile"
     # inner_text torna in maiuscolo: e' il CSS che le scrive cosi'
     assert a.pg.locator("#scegliTabellone .eti").inner_text().strip().lower() == "16 giocatori"
+    assert "16 giocatori" in a.pg.locator("#etiGirone").inner_text().lower()
+
     a.pg.click("#scegliTabellone"); a.pg.wait_for_timeout(300)
-    assert a.vista() == "elenco", "il tabellone invece si apre"
+    assert a.vista() == "elenco"
+    a.pg.go_back(); a.pg.wait_for_timeout(300)
+    assert a.vista() == "scelta"
+    a.pg.click("#scegliGirone"); a.pg.wait_for_timeout(300)
+    assert a.vista() == "gelenco", "dalla scelta si deve entrare nel girone: %s" % a.vista()
+    a.pg.go_back(); a.pg.wait_for_timeout(300)
+    assert a.vista() == "scelta", "e indietro si deve tornare alla scelta"
     a.chiudi()
 
-    # l'indirizzo di prova lo accende, e resta acceso su questo apparecchio
+    # l'indirizzo con #girone resta una scorciatoia
     b = App(ctx, sito, formato="girone")
     assert b.vista() == "gelenco"
-    b.pg.goto(sito); b.pg.wait_for_timeout(500)
-    assert b.vista() == "scelta"
-    assert b.pg.locator("#scegliGirone").is_enabled(), "doveva restare acceso"
     b.chiudi()
-    dire("il girone e' spento per tutti e acceso solo da chi ha l'indirizzo di prova")
+    dire("i due tornei si scelgono dalla prima schermata, e #girone resta una scorciatoia")
 
 
 def calendario_pari(ctx, sito, dire):
@@ -185,5 +188,5 @@ def fino_a_sedici(ctx, sito, dire):
     dire("sedici giocatori: 120 partite in 15 turni da otto")
 
 
-PROVE = [il_tasto_e_spento, calendario_pari, calendario_dispari, fino_a_sedici,
+PROVE = [dalla_scelta, calendario_pari, calendario_dispari, fino_a_sedici,
          girone_intero, scontro_diretto, annulla_e_riprende]

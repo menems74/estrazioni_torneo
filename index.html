@@ -209,6 +209,7 @@
     background:var(--azione);color:var(--su-azione);display:grid;place-items:center;
     font:800 20px var(--font-display)}
   .formato .eti,.formato h3{padding-right:58px}
+  /* per il prossimo formato che arrivera' prima di essere pronto */
   .formato.spento{background:transparent;border:2px dashed var(--filo)}
   .formato.spento .eti{color:var(--evidenza)}
   .formato.spento .go{background:var(--tasto-spento);color:var(--muted)}
@@ -643,7 +644,7 @@
         <span class="go" aria-hidden="true">&#8594;</span>
       </button>
 
-      <button type="button" class="formato spento" id="scegliGirone" disabled>
+      <button type="button" class="formato" id="scegliGirone">
         <span class="eti" id="etiGirone">Da 3 a 16 giocatori</span>
         <h3>Girone all'italiana</h3>
         <p>Tutti contro tutti</p>
@@ -734,8 +735,8 @@
       <svg class="marchio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
     </div>
 
-    <p class="nota prova">Questo formato è in prova: le regole si possono ancora
-       cambiare. Vittoria 2 punti, sconfitta 0, nessun pareggio.</p>
+    <p class="nota prova">Tutti contro tutti, una partita per coppia. Vittoria 2 punti,
+       sconfitta 0, nessun pareggio; a pari punti conta lo scontro diretto.</p>
 
     <div class="strumenti">
       <div class="quanti">
@@ -841,7 +842,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.7';        // si legge in fondo alla pagina
+  var VERSIONE = '1.8';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
@@ -1777,7 +1778,6 @@
     if((v === 'gara' || v === 'tabellone') && !gara) v = 'elenco';
     if(v === 'coppie' && !ultimaEstrazione) v = 'elenco';
     if(v === 'ggara' && !girone) v = 'gelenco';
-    if(v === 'gelenco' && !gironeAperto()) v = 'scelta';
     apriVista(v);
   });
 
@@ -2140,20 +2140,12 @@
      =================================================================== */
   var CHIAVE_GIR = 'estrazione-torneo:girone';
   var CHIAVE_GIR_NOMI = 'estrazione-torneo:girone-nomi';
-  var CHIAVE_PROVA = 'estrazione-torneo:in-prova';
   var GIR_MIN = 3, GIR_MAX = 16, GIR_PREDEF = 6;
   var PUNTI_VITTORIA = 2;
   var FORMATO_GIR = 'girone', FORMATO_GIR_V = 1;
 
   var girNomi = leggiGirNomi();
   var girone = leggiGirone();
-
-  function gironeAperto(){
-    try{ return localStorage.getItem(CHIAVE_PROVA) === 'girone'; }catch(e){ return false; }
-  }
-  function apriIlGirone(){
-    scrivi(CHIAVE_PROVA, 'girone');
-  }
 
   function leggiGirNomi(){
     try{
@@ -2521,10 +2513,6 @@
 
   /* -------------------------------------------- la scelta del torneo --- */
   function disegnaScelta(){
-    var tasto = document.getElementById('scegliGirone');
-    var aperto = gironeAperto();
-    tasto.disabled = !aperto;
-    tasto.classList.toggle('spento', !aperto);
     document.getElementById('etiGirone').textContent =
       girone ? 'Girone in corso' : 'Da ' + GIR_MIN + ' a ' + GIR_MAX + ' giocatori';
     document.querySelector('#scegliTabellone .eti').textContent =
@@ -2622,9 +2610,11 @@
   salva();          /* travasa subito la lista vecchia sulla chiave nuova */
   document.getElementById('versione').textContent = 'v' + VERSIONE;
   sostituisci('scelta');
+  /* l'indirizzo che finisce con #girone resta una scorciatoia per
+     entrarci subito, ma ormai il girone si sceglie anche dalla prima
+     schermata come il tabellone */
   var vuoleIlGirone = /^#girone\b/.test(location.hash || '');
   if(vuoleIlGirone){
-    apriIlGirone();
     try{ history.replaceState({ vista:'scelta' }, '', location.pathname + location.search); }catch(e){}
   }
   var arrivata = garaNellIndirizzo();
