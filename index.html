@@ -123,6 +123,17 @@
   .pallino{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green-live);margin-right:6px}
   .pallino.bye{background:var(--muted-dark)}
 
+  /* --- l'allarme: compare solo se il telefono non riesce a salvare --- */
+  .allarme{position:sticky;top:0;z-index:30;background:var(--rosso);color:#fff;
+    font:600 14px/1.4 var(--font-sans);padding:12px 16px;text-align:center}
+
+  /* --- il richiamo alla gara aperta, in cima all'elenco --- */
+  .ripresa{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+    background:var(--blocco);color:var(--su-blocco);border:0;border-radius:var(--radius);
+    padding:16px 20px;min-height:64px;margin-bottom:var(--gap);text-align:left}
+  .ripresa span{font:600 15px var(--font-sans)}
+  .ripresa b{font:800 16px var(--font-display);color:var(--evidenza);white-space:nowrap}
+
   /* --- testata --- */
   .testata{background:var(--blocco);color:var(--su-blocco);border-radius:var(--radius);padding:26px 24px;margin-bottom:var(--gap)}
   .testa-lista{display:flex;align-items:center;justify-content:space-between;gap:18px}
@@ -174,6 +185,8 @@
     margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
   .titoloGara small{font:600 13px var(--font-sans);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 
+  .scarto{background:var(--rosso);color:#fff;border-radius:14px;padding:10px 14px;margin-bottom:10px;
+    font:600 14px var(--font-sans)}
   .fila{display:grid;grid-template-columns:1fr;gap:10px}
   @media (min-width:760px){.fila{grid-template-columns:1fr 1fr}}
   .incontro{background:var(--paper);border-radius:var(--radius);padding:12px 14px 14px;
@@ -342,6 +355,8 @@
   .istruzioni b{color:var(--ink);font-weight:600}
   .firma{font:500 12px var(--font-sans);color:var(--muted);letter-spacing:.04em}
   .firma a{border-bottom:1px solid var(--filo);padding-bottom:3px}
+  .versione{display:block;margin-top:8px;font:500 11px var(--font-sans);color:var(--muted-dark);
+    letter-spacing:.08em}
   .firma a:active{color:var(--ink);border-bottom-color:var(--ink)}
 
   /* --- la barra con il pulsantone, sempre a portata di pollice --- */
@@ -532,6 +547,8 @@
   </symbol>
 </svg>
 
+<p class="allarme" id="allarme" role="alert" hidden></p>
+
 <div class="pagina">
   <div class="top">
     <div class="tema" role="group" aria-label="Aspetto della pagina">
@@ -550,6 +567,10 @@
 
   <!-- ===== schermata 1: chi c'è ===== -->
   <section id="vistaElenco">
+    <button type="button" class="ripresa" id="ripresa" hidden>
+      <span>C'è una gara in corso</span>
+      <b>Riprendi &#8594;</b>
+    </button>
     <div class="testata testa-lista">
       <h1>Estrazione Torneo</h1>
       <svg class="marchio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
@@ -584,6 +605,7 @@
     <div class="vinta" id="garaVinta" hidden></div>
 
     <h2 class="titoloGara" id="tDaChiamare">Da chiamare <small>in ordine · tocca chi ha vinto</small></h2>
+    <p class="scarto" id="garaScarto" role="status" hidden>Tocco troppo veloce: non l'ho contato, rifallo.</p>
     <div class="fila" id="garaPronte"></div>
     <p class="nota" id="garaNessuna" hidden>Nessuna coppia pronta: aspetta i risultati di quelle in corso.</p>
 
@@ -632,6 +654,7 @@
     </p>
     <p class="firma">
       <a href="https://www.instagram.com/rems_2.0_" target="_blank" rel="noopener">Powered by Rems</a>
+      <span class="versione" id="versione"></span>
     </p>
   </footer>
 </div>
@@ -659,7 +682,47 @@
 (function(){
   'use strict';
 
+  var VERSIONE = '1.3';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
+
+  /* --------------------------------------------------------- l'archivio -
+     Tutto resta nel browser di questo apparecchio: niente server, niente
+     account, nessun dato che esce di qui. Se pero' la scrittura fallisce -
+     spazio esaurito, navigazione privata, impostazioni restrittive - non
+     si puo' far finta di niente: compare una fascia rossa in cima. */
+  var archivioRotto = false;
+
+  function scrivi(chiave, valore){
+    try{
+      localStorage.setItem(chiave, valore);
+      if(archivioRotto){ archivioRotto = false; disegnaAllarme(''); }
+      return true;
+    }catch(e){
+      archivioRotto = true;
+      disegnaAllarme('Attenzione: questo apparecchio non sta salvando. ' +
+                     'Non chiudere la pagina e segna i risultati anche su carta.');
+      return false;
+    }
+  }
+  function cancella(chiave){
+    try{ localStorage.removeItem(chiave); }catch(e){}
+  }
+  function disegnaAllarme(testo){
+    var a = document.getElementById('allarme');
+    a.textContent = testo;
+    a.hidden = !testo;
+  }
+
+  /* Chiede al browser di non buttare via l'archivio nelle pulizie
+     automatiche. Si puo' solo chiedere, non pretendere. */
+  function chiediArchivioStabile(){
+    try{
+      if(!navigator.storage || !navigator.storage.persist) return;
+      navigator.storage.persisted().then(function(gia){
+        if(!gia) return navigator.storage.persist();
+      }).catch(function(){});
+    }catch(e){}
+  }
   var CHIAVE = 'estrazione-torneo:giocatori';
   var CHIAVE_VECCHIA = 'rems:torneo:giocatori';   // da quando stava nel portale
 
@@ -688,9 +751,7 @@
     }catch(e){ /* niente memoria: si riparte puliti */ }
     return vuoti(QUANTI);
   }
-  function salva(){
-    try{ localStorage.setItem(CHIAVE, JSON.stringify(giocatori)); }catch(e){}
-  }
+  function salva(){ scrivi(CHIAVE, JSON.stringify(giocatori)); }
   function nomeDi(i){
     return giocatori[i].nome.trim() || ('Giocatore ' + (i + 1));
   }
@@ -949,13 +1010,9 @@
       coppie.length + ' partite' + (conBye2 ? ', di cui ' + conBye2 + ' con un bye' : '') +
       '. Chiamale una alla volta: tocca la partita quando l\'hai chiamata.';
 
-    document.getElementById('vistaElenco').hidden = true;
-    document.getElementById('vistaCoppie').hidden = false;
-    document.body.classList.add('conCoppie');
-    window.scrollTo(0, 0);
-
     ultimaEstrazione = esito;
-    piediCoppie();
+    if(vistaOra === 'coppie') sostituisci('coppie');   /* rifatta: non un passo nuovo */
+    else vaiA('coppie');
   }
 
   function nomeGrande(g){
@@ -978,6 +1035,16 @@
   function piediCoppie(){
     var dentro = document.querySelector('.barra .dentro');
     viaICollegamenti();
+
+    if(gara){
+      /* una gara e' gia' aperta: da qui non si ricomincia per sbaglio */
+      modoAvvia = 'torna';
+      document.getElementById('etichettaAvvia').textContent = 'Torna alla gara';
+      document.getElementById('avviso').textContent =
+        'C\'è una gara in corso: questo sorteggio non la tocca.';
+      dentro.appendChild(collegamento('Modifica i giocatori', tornaAiNomi));
+      return;
+    }
 
     var pronti = giocatori.length === 16;
     modoAvvia = pronti ? 'inizia' : 'estrai';
@@ -1012,19 +1079,34 @@
   }
 
   function tornaAiNomi(){
-    document.getElementById('vistaCoppie').hidden = true;
-    document.getElementById('vistaElenco').hidden = false;
-    document.body.classList.remove('conCoppie');
     modoAvvia = 'estrai';
     document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
-    viaICollegamenti();
-    disegnaElenco();
-    window.scrollTo(0, 0);
+    history.back();          /* l'elenco e' il passo da cui siamo venuti */
   }
 
   /* ------------------------------------------------------------ il via --- */
+  /* Rifare il sorteggio con una gara aperta vuol dire buttarla: si chiede
+     conferma con un secondo tocco, come per chiudere la gara. */
+  var chiestoDiRifare = 0;
+  function viaLiberaPerEstrarre(){
+    if(!gara) return true;
+    var ora = Date.now();
+    if(ora - chiestoDiRifare < 6000){
+      chiestoDiRifare = 0;
+      gara = null; salvaGara(); disegnaRipresa();
+      return true;
+    }
+    chiestoDiRifare = ora;
+    document.getElementById('avviso').textContent =
+      'C\'è una gara in corso. Premi di nuovo entro sei secondi per cancellarla ' +
+      'e rifare il sorteggio.';
+    return false;
+  }
+
   document.getElementById('avvia').addEventListener('click', function(){
+    if(modoAvvia === 'torna'){ vaiA('gara'); return; }
     if(modoAvvia === 'inizia'){ iniziaGara(); return; }
+    if(!viaLiberaPerEstrarre()) return;
     var esito = estrai();
     contoAllaRovescia(function(){ mostraCoppie(esito); });
   });
@@ -1057,6 +1139,8 @@
      chi sta dove basta scorrerle una volta in ordine.
      ===================================================================== */
   var CHIAVE_GARA = 'estrazione-torneo:gara';
+  var FORMATO = 'tab16-dko';   /* tabellone da 16 a doppio K.O. */
+  var FORMATO_V = 1;           /* come sono scritti i dati di questo formato */
 
   var PARTITE = [
     {n:1,  a:['S',0],  b:['S',1],  g:'Primo turno'},
@@ -1116,17 +1200,22 @@
   var gara = leggiGara();
 
   function leggiGara(){
-    try{
-      var g = JSON.parse(localStorage.getItem(CHIAVE_GARA));
-      if(g && g.ordine && g.ordine.length === 16 && g.esiti) return g;
-    }catch(e){}
-    return null;
+    var g;
+    try{ g = JSON.parse(localStorage.getItem(CHIAVE_GARA)); }catch(e){ return null; }
+    if(!g || !g.ordine || g.ordine.length !== 16 || !g.esiti) return null;
+    /* una gara salvata da una versione piu' nuova non si apre a caso: si
+       lascia dov'e' e si avvisa, cosi' non la si rovina */
+    if(g.v && g.v > FORMATO_V){
+      disegnaAllarme('C\'è una gara salvata da una versione più nuova dell\'app. ' +
+                     'Aggiorna la pagina per riprenderla.');
+      return null;
+    }
+    if(g.formato && g.formato !== FORMATO) return null;
+    return g;
   }
   function salvaGara(){
-    try{
-      if(gara) localStorage.setItem(CHIAVE_GARA, JSON.stringify(gara));
-      else localStorage.removeItem(CHIAVE_GARA);
-    }catch(e){}
+    if(gara) scrivi(CHIAVE_GARA, JSON.stringify(gara));
+    else cancella(CHIAVE_GARA);
   }
 
   function bellaServe(){ return !!gara.esiti[30] && gara.esiti[30].v === 'b'; }
@@ -1174,6 +1263,7 @@
 
   /* --------------------------------------------------- i risultati --- */
   function segna(n, lato){
+    if(troppoPresto()) return;
     gara.esiti[n] = { v:lato, u:false, q:gara.passo++ };
     salvaGara(); disegnaGara();
   }
@@ -1393,6 +1483,7 @@
      partite l'app lo dice prima: al bar gli sbagli si scoprono tardi, e
      un'app che dice di no quando hai davvero sbagliato e' peggio.        */
   function chiediAnnulla(n, riga){
+    if(troppoPresto()) return;
     var cadono = aCascata(n);
     if(!cadono.length){ annulla(n); return; }
     riga.className = 'esito-riga chiede';
@@ -1413,6 +1504,11 @@
   }
 
   /* --------------------------------------------------- entrare e uscire */
+  function disegnaRipresa(){
+    document.getElementById('ripresa').hidden = !gara;
+  }
+  document.getElementById('ripresa').addEventListener('click', function(){ vaiA('gara'); });
+
   function iniziaGara(){
     if(!ultimaEstrazione || ultimaEstrazione.coppie.length !== 8) return;
     var ordine = [];
@@ -1420,22 +1516,13 @@
       ordine.push({ nome:c.uno.nome, bye:c.uno.bye });
       ordine.push({ nome:c.due.nome, bye:c.due.bye });
     });
-    gara = { ordine:ordine, esiti:{}, passo:1 };
+    gara = { formato:FORMATO, v:FORMATO_V, nata:Date.now(),
+             ordine:ordine, esiti:{}, passo:1 };
     salvaGara();
     mostraGara();
   }
 
-  function mostraGara(){
-    document.getElementById('vistaElenco').hidden = true;
-    document.getElementById('vistaCoppie').hidden = true;
-    document.getElementById('vistaTabellone').hidden = true;
-    document.body.classList.remove('nelTabellone');
-    document.getElementById('vistaGara').hidden = false;
-    document.body.classList.remove('conCoppie');
-    document.body.classList.add('inGara');
-    disegnaGara();
-    window.scrollTo(0, 0);
-  }
+  function mostraGara(){ vaiA('gara'); }
 
   document.getElementById('chiudiGara').addEventListener('click', function(){
     var b = this;
@@ -1446,18 +1533,108 @@
       return;
     }
     gara = null; salvaGara();
-    document.getElementById('vistaTabellone').hidden = true;
-    document.getElementById('vistaGara').hidden = true;
-    document.getElementById('vistaElenco').hidden = false;
-    document.body.classList.remove('inGara');
-    document.body.classList.remove('nelTabellone');
     b.dataset.sicuro = ''; b.textContent = 'Chiudi la gara';
     modoAvvia = 'estrai';
     document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
-    disegnaElenco();
-    window.scrollTo(0, 0);
+    sostituisci('elenco');
   });
 
+
+
+  /* ===================================================================
+     LE SCHERMATE E IL TASTO INDIETRO
+
+     Le quattro schermate sono sezioni della stessa pagina, quindi per il
+     browser esisterebbe un solo passo: indietro uscirebbe dall'app. Ogni
+     schermata diventa invece un passo della cronologia, e indietro
+     ripercorre la strada: tabellone -> gara -> elenco.
+     =================================================================== */
+  var vistaOra = 'elenco';
+
+  function apriVista(nome){
+    var e = nome === 'elenco', c = nome === 'coppie',
+        g = nome === 'gara',   t = nome === 'tabellone';
+    document.getElementById('vistaElenco').hidden = !e;
+    document.getElementById('vistaCoppie').hidden = !c;
+    document.getElementById('vistaGara').hidden = !g;
+    document.getElementById('vistaTabellone').hidden = !t;
+    document.body.classList.toggle('conCoppie', c);
+    document.body.classList.toggle('inGara', g || t);
+    document.body.classList.toggle('nelTabellone', t);
+    vistaOra = nome;
+
+    if(e){ disegnaElenco(); disegnaRipresa(); viaICollegamenti(); }
+    if(c) piediCoppie();
+    if(g) disegnaGara();
+    if(t) disegnaTabellone();
+    if(g || t) tieniSveglio(); else lasciaDormire();
+    window.scrollTo(0, 0);
+  }
+  function vaiA(nome){
+    apriVista(nome);
+    try{ history.pushState({ vista:nome }, ''); }catch(e){}
+  }
+  function sostituisci(nome){
+    apriVista(nome);
+    try{ history.replaceState({ vista:nome }, ''); }catch(e){}
+  }
+  window.addEventListener('popstate', function(ev){
+    var v = ev.state && ev.state.vista;
+    if(!v) return;
+    /* la strada potrebbe non esistere piu': una gara chiusa, un'estrazione
+       persa con il ricaricamento. In quel caso si torna all'elenco. */
+    if((v === 'gara' || v === 'tabellone') && !gara) v = 'elenco';
+    if(v === 'coppie' && !ultimaEstrazione) v = 'elenco';
+    apriVista(v);
+  });
+
+  /* --------------------------------------------- lo schermo resta acceso -
+     Durante la gara il tablet sta sul bancone e non deve spegnersi. */
+  var sveglia = null;
+  function tieniSveglio(){
+    if(sveglia) return;
+    try{
+      if(!navigator.wakeLock) return;
+      navigator.wakeLock.request('screen').then(function(s){
+        sveglia = s;
+        s.addEventListener('release', function(){ sveglia = null; });
+      }).catch(function(){});
+    }catch(e){}
+  }
+  function lasciaDormire(){
+    if(!sveglia) return;
+    try{ sveglia.release(); }catch(e){}
+    sveglia = null;
+  }
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState !== 'visible') return;
+    if(vistaOra === 'gara' || vistaOra === 'tabellone') tieniSveglio();
+  });
+
+  /* ------------------------------------------------- il doppio tocco ----
+     Chiuso un risultato la scheda sparisce e quella dopo sale al suo
+     posto: un secondo tocco partito troppo presto finirebbe su una
+     partita mai giocata. Per tre decimi di secondo i tasti non
+     rispondono - abbastanza per fermare il rimbalzo di un dito, troppo
+     poco per dare fastidio a chi tocca due schede di seguito apposta.
+     E se un tocco viene scartato lo si dice, cosi' non si crede di aver
+     segnato qualcosa che non c'e'. */
+  var ultimoTocco = 0;
+  var scartoVia = null;
+
+  function troppoPresto(){
+    var ora = Date.now();
+    if(ora - ultimoTocco < 300){ diScartato(); return true; }
+    ultimoTocco = ora;
+    return false;
+  }
+  function diScartato(){
+    var p = document.getElementById('garaScarto');
+    if(!p) return;
+    p.hidden = false;
+    clearTimeout(scartoVia);
+    scartoVia = setTimeout(function(){ p.hidden = true; }, 2500);
+  }
 
   /* ------------------------------------------------- il tabellone intero -
      Dove sta ogni casella: colonna da 1 a 11, poi riga di partenza e
@@ -1531,21 +1708,11 @@
       '<small>' + quando.toLocaleDateString('it-IT') + '</small>';
   }
 
-  function mostraTabellone(){
-    document.getElementById('vistaGara').hidden = true;
-    document.getElementById('vistaTabellone').hidden = false;
-    document.body.classList.add('nelTabellone');
-    disegnaTabellone();
-    window.scrollTo(0, 0);
-  }
+  function mostraTabellone(){ vaiA('tabellone'); }
 
   document.getElementById('vediTabellone').addEventListener('click', mostraTabellone);
   document.getElementById('tornaGara').addEventListener('click', function(){
-    document.getElementById('vistaTabellone').hidden = true;
-    document.getElementById('vistaGara').hidden = false;
-    document.body.classList.remove('nelTabellone');
-    disegnaGara();
-    window.scrollTo(0, 0);
+    history.back();          /* la gara e' il passo da cui siamo venuti */
   });
   document.getElementById('stampaTab').addEventListener('click', function(){
     window.print();
@@ -1618,7 +1785,7 @@
       meta.setAttribute('content',
         getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
     }
-    if(ricorda){ try{ localStorage.setItem(CHIAVE_TEMA, nome); }catch(e){} }
+    if(ricorda) scrivi(CHIAVE_TEMA, nome);
   }
   tastoChiaro.addEventListener('click', function(){ vesti('chiaro', true); });
   tastoScuro.addEventListener('click', function(){ vesti('scuro', true); });
@@ -1632,9 +1799,12 @@
     });
   }catch(e){ /* browser vecchio: pazienza, resta com'e' */ }
 
+  chiediArchivioStabile();
   salva();          /* travasa subito la lista vecchia sulla chiave nuova */
-  disegnaElenco();
-  if(gara) mostraGara();   /* una gara aperta si riprende da dov'era */
+  document.getElementById('versione').textContent = 'v' + VERSIONE;
+  sostituisci('elenco');
+  if(gara) vaiA('gara');   /* una gara aperta si riprende da dov'era,
+                              e il tasto indietro riporta all'elenco */
 })();
 </script>
 </body>

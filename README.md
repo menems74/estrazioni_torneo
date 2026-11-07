@@ -43,6 +43,16 @@ allarga con due dita. **Stampa il foglio** manda lo stesso tabellone,
 bianco e nero, su un A4 orizzontale: buono da appendere al muro, così i
 giocatori guardano da soli invece di chiedere.
 
+Il tasto **indietro** del telefono ripercorre la strada — tabellone,
+gara, coppie, elenco — invece di uscire dall'app, e durante la gara lo
+schermo non si spegne da solo. Se all'elenco c'è una gara aperta, in cima
+compare il richiamo per riprenderla, e rifare il sorteggio chiede conferma
+prima di cancellarla.
+
+Un tocco che arriva meno di tre decimi di secondo dopo il precedente viene
+scartato e l'app lo dice: senza questa guardia il rimbalzo di un dito
+chiuderebbe anche la partita salita al posto di quella appena segnata.
+
 Un risultato sbagliato si annulla. Se ha già prodotto altre partite l'app
 lo dice prima — «annullando la 1 si cancella anche la 9 e la 13» — e
 aspetta conferma. La gara si salva a ogni tocco: se il telefono si spegne
@@ -59,9 +69,19 @@ accoppiamento ha la stessa probabilità. L'unica regola in più è che due Bye
 non si incontrano, finché i numeri lo permettono: se i Bye sono più dei
 presenti, qualche Bye contro Bye diventa inevitabile e la pagina lo dice.
 
-Nomi e stato restano scritti nel browser di chi la usa (`localStorage`):
-alla riapertura il tabellone è quello di prima. Non vengono inviati da
-nessuna parte, non c'è un server.
+## Dove finiscono i dati
+
+Da nessuna parte. Nomi, bye, risultati e tema restano nel browser
+dell'apparecchio che li ha scritti (`localStorage`): niente server,
+niente account, niente che esca di lì. Due bar che usano l'app la stessa
+sera non si vedono fra loro, e il repository contiene solo il codice e le
+prove automatiche, mai i dati di una gara.
+
+L'app chiede al browser di tenere l'archivio al riparo dalle pulizie
+automatiche, e se una scrittura fallisce — spazio esaurito, navigazione
+privata — compare una fascia rossa in cima invece di tacere. Ogni gara
+salvata porta scritto il formato e la versione con cui è nata, così una
+gara di domani non viene letta con le regole di ieri.
 
 ## Installarla sul telefono
 
