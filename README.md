@@ -10,7 +10,8 @@ registrazione e niente connessione obbligatoria.
 
 1. Si sceglie quanti giocatori sono in tabellone (parte da 16, da 2 a 64).
 2. Per ognuno si scrive il nome e si segna **Presente** o **Bye**.
-3. Si preme **Avvia estrazione**: tre secondi di conto alla rovescia e
+3. Si preme **Avvia estrazione**: parte il conto alla rovescia sul
+   bersaglio — una freccetta si pianta a ogni secondo — e al terzo
    compaiono le partite.
 4. L'organizzatore chiama le coppie una alla volta e tocca la partita
    quando l'ha chiamata, così non perde il segno.

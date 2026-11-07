@@ -108,11 +108,14 @@
 
   /* --- testata --- */
   .testata{background:var(--blocco);color:var(--su-blocco);border-radius:var(--radius);padding:26px 24px;margin-bottom:var(--gap)}
+  .testa-lista{display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .marchio{flex:none;width:clamp(62px,17vw,104px);height:auto}
   .testata h1{font-size:clamp(38px,8vw,72px);font-weight:800;line-height:.95;letter-spacing:-.03em}
   .testata p{font:400 16px/1.45 var(--font-sans);color:var(--muted-dark);margin-top:10px;max-width:46ch}
 
   /* --- i sedici --- */
-  .strumenti{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 var(--gap)}
+  .strumenti{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0 0 var(--gap)}
+  .strumenti .riga{display:flex;gap:10px;flex-wrap:wrap}
   .quanti{display:flex;align-items:center;gap:6px;background:var(--blocco);color:var(--su-blocco);
     border-radius:999px;padding:4px 6px 4px 18px}
   .quanti .etichetta{font:600 14px var(--font-sans);margin-right:4px}
@@ -121,9 +124,11 @@
   .quanti button:active{background:var(--evidenza);color:var(--blocco)}
   .quanti output{min-width:56px;text-align:center;font:800 26px var(--font-display);
     color:var(--evidenza);font-variant-numeric:tabular-nums}
-  .strumenti button{background:transparent;border:2px solid var(--ink);border-radius:999px;
+  /* solo i due tasti della seconda riga: se no questa regola rubava anche
+     i tondi - e +, che dentro la pill nera restavano senza contorno */
+  .riga button{background:transparent;border:2px solid var(--ink);border-radius:999px;
     padding:0 18px;min-height:44px;font:600 14px var(--font-sans)}
-  .strumenti button:active{background:var(--ink);color:var(--paper)}
+  .riga button:active{background:var(--ink);color:var(--paper)}
 
   .elenco{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .giocatore{
@@ -179,6 +184,8 @@
     box-shadow:0 10px 0 var(--ombra-tasto);transition:transform .12s,box-shadow .12s;
   }
   .avvia:active{transform:translateY(6px);box-shadow:0 4px 0 var(--ombra-tasto)}
+  .avvia .dardo{flex:none;width:clamp(52px,13vw,64px);height:auto;transform:scaleX(-1);color:var(--su-azione)}
+  .avvia[disabled] .dardo{opacity:.5}
   .avvia[disabled]{background:var(--tasto-spento);color:var(--muted);box-shadow:none;cursor:not-allowed}
   .avviso{
     margin-top:10px;text-align:center;font:600 15px var(--font-sans);color:var(--rosso);
@@ -190,14 +197,70 @@
     position:fixed;inset:0;z-index:20;background:var(--blocco);color:var(--su-blocco);
     display:grid;place-items:center;text-align:center;padding:24px;
   }
-  .sipario .scritta{font:600 clamp(18px,4vw,28px) var(--font-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--evidenza)}
+  /* La scena: il bersaglio gira piano, il numero gli sta davanti e a ogni
+     secondo arriva una freccetta da fuori campo. Tutto impilato nella
+     stessa cella della griglia, la scritta nella riga sotto. */
+  .scena{
+    position:relative;display:grid;grid-template-rows:auto auto;
+    justify-items:center;align-items:center;gap:clamp(14px,4vw,30px);
+    --board:min(78vw,360px);
+  }
+  .scena > *{grid-row:1;grid-column:1}
+  .bersaglio{
+    width:var(--board);height:var(--board);
+    filter:drop-shadow(0 20px 46px rgba(0,0,0,.55));
+    animation:gira 16s linear infinite;
+  }
+  @keyframes gira{to{transform:rotate(360deg)}}
+  .lanci{position:relative;width:var(--board);height:var(--board);pointer-events:none}
+  .freccia{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotate(var(--a))}
+  .freccia svg{
+    position:absolute;left:0;top:calc(var(--board) * -.0428);
+    width:calc(var(--board) * .4);height:auto;color:var(--evidenza);
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));
+    animation:lancio .44s cubic-bezier(.16,.9,.28,1.22) both;
+  }
+  @keyframes lancio{
+    0%{transform:translateX(calc(var(--board) * 2)) scale(1.3);opacity:0}
+    14%{opacity:1}
+    100%{transform:translateX(var(--r)) scale(1)}
+  }
+  .freccia::after{
+    content:'';position:absolute;left:var(--r);top:0;width:16px;height:16px;margin:-8px 0 0 -8px;
+    border-radius:50%;border:2px solid var(--evidenza);
+    animation:colpo .55s ease-out .4s both;
+  }
+  @keyframes colpo{from{transform:scale(.2);opacity:.9}to{transform:scale(3.6);opacity:0}}
+
   .sipario .numero{
-    font:800 clamp(140px,44vw,320px)/1 var(--font-display);letter-spacing:-.04em;
-    font-variant-numeric:tabular-nums;
+    font:800 clamp(104px,32vw,230px)/1 var(--font-display);letter-spacing:-.04em;
+    font-variant-numeric:tabular-nums;text-shadow:0 8px 34px rgba(0,0,0,.7);
   }
   .sipario .numero.battito{animation:battito .9s ease-out}
   @keyframes battito{from{transform:scale(.72);opacity:.2}to{transform:scale(1);opacity:1}}
-  @media (prefers-reduced-motion:reduce){.sipario .numero.battito{animation:none}.avvia{transition:none}}
+  .sipario .scritta{
+    grid-row:2;font:600 clamp(16px,3.6vw,26px) var(--font-sans);letter-spacing:.14em;
+    text-transform:uppercase;color:var(--evidenza);
+  }
+
+  /* l'ultimo istante: il bersaglio si gonfia e sparisce, e parte l'onda */
+  .scena::after{
+    content:'';display:none;width:var(--board);height:var(--board);border-radius:50%;
+    border:6px solid var(--evidenza);
+  }
+  .scena.via::after{display:block;animation:onda .42s ease-out forwards}
+  @keyframes onda{from{transform:scale(.55);opacity:.85}to{transform:scale(2.1);opacity:0}}
+  .scena.via .bersaglio{animation:botto .42s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes botto{to{transform:scale(1.5);opacity:0}}
+  .scena.via .numero,.scena.via .lanci{animation:svanisci .3s ease-in forwards}
+  @keyframes svanisci{to{opacity:0;transform:scale(1.18)}}
+
+  @media (prefers-reduced-motion:reduce){
+    .sipario .numero.battito,.bersaglio,.freccia svg,.freccia::after,
+    .scena.via .bersaglio,.scena.via .numero,.scena.via .lanci,.scena.via::after{animation:none}
+    .freccia svg{transform:translateX(var(--r))}
+    .avvia{transition:none}
+  }
 
   /* --- il tabellone: una scheda per partita, fatta per essere chiamata
          a voce da chi organizza. Numero grande a sinistra, i due nomi uno
@@ -263,6 +326,38 @@
 </head>
 <body>
 
+<!-- I due disegni, definiti una volta e richiamati dove servono.
+     Il bersaglio e' fatto con il trucco del tratteggio: un cerchio con
+     il bordo spesso quanto il raggio diventa una torta, e il tratteggio
+     la taglia in venti spicchi. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="bersaglio" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="48" fill="#111316"/>
+    <circle cx="50" cy="50" r="45" fill="none" stroke="#1b1e22" stroke-width="6"/>
+    <circle cx="50" cy="50" r="21" fill="none" stroke="#efe2c0" stroke-width="42"/>
+    <circle cx="50" cy="50" r="21" fill="none" stroke="#17191c" stroke-width="42"
+            stroke-dasharray="6.597 6.597"/>
+    <circle cx="50" cy="50" r="39.5" fill="none" stroke="#1f8a4c" stroke-width="5"
+            stroke-dasharray="12.409 12.409"/>
+    <circle cx="50" cy="50" r="39.5" fill="none" stroke="#d12e21" stroke-width="5"
+            stroke-dasharray="12.409 12.409" stroke-dashoffset="-12.409"/>
+    <circle cx="50" cy="50" r="25.5" fill="none" stroke="#1f8a4c" stroke-width="5"
+            stroke-dasharray="8.011 8.011"/>
+    <circle cx="50" cy="50" r="25.5" fill="none" stroke="#d12e21" stroke-width="5"
+            stroke-dasharray="8.011 8.011" stroke-dashoffset="-8.011"/>
+    <circle cx="50" cy="50" r="6.2" fill="#1f8a4c"/>
+    <circle cx="50" cy="50" r="2.8" fill="#d12e21"/>
+  </symbol>
+  <!-- punta a sinistra: si infila nel bersaglio arrivando da destra -->
+  <symbol id="freccetta" viewBox="0 0 112 24">
+    <path d="M0 12 18 9 18 15Z" fill="#e8edf4"/>
+    <rect x="17" y="8" width="35" height="8" rx="3" fill="#c3cad4"/>
+    <path d="M26 8v8M33 8v8M40 8v8" stroke="#8d97a4" stroke-width="1.4"/>
+    <rect x="51" y="10.4" width="24" height="3.2" rx="1.6" fill="#2b313c"/>
+    <path d="M74 12 105 2 99 12 105 22Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
 <div class="pagina">
   <div class="top">
     <div class="tema" role="group" aria-label="Aspetto della pagina">
@@ -274,11 +369,9 @@
 
   <!-- ===== schermata 1: chi c'è ===== -->
   <section id="vistaElenco">
-    <div class="testata">
+    <div class="testata testa-lista">
       <h1>Estrazione Torneo</h1>
-      <p>Segna chi c'è e chi è Bye, poi avvia. Il sorteggio accoppia tutti a caso
-         per il primo turno ed evita, finché i numeri lo permettono, che due Bye
-         si incontrino.</p>
+      <svg class="marchio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
     </div>
 
     <div class="strumenti">
@@ -288,8 +381,10 @@
         <output id="numeroGiocatori" aria-labelledby="etichettaQuanti">16</output>
         <button type="button" id="piu" aria-label="Un giocatore in piu">+</button>
       </div>
-      <button type="button" id="tuttiPresenti">Tutti presenti</button>
-      <button type="button" id="nomiDaCapo">Rimetti i nomi</button>
+      <div class="riga">
+        <button type="button" id="tuttiPresenti">Tutti presenti</button>
+        <button type="button" id="nomiDaCapo">Rimetti i nomi</button>
+      </div>
     </div>
 
     <div class="elenco" id="elenco"></div>
@@ -324,15 +419,20 @@
 
 <div class="barra">
   <div class="dentro">
-    <button class="avvia" type="button" id="avvia">Avvia estrazione</button>
+    <button class="avvia" type="button" id="avvia">
+      <svg class="dardo" viewBox="0 0 112 24" aria-hidden="true"><use href="#freccetta"/></svg>
+      <span id="etichettaAvvia">Avvia estrazione</span>
+    </button>
     <p class="avviso" id="avviso" role="status"></p>
   </div>
 </div>
 
 <div class="sipario" id="sipario" hidden aria-live="assertive" aria-busy="true">
-  <div>
-    <p class="scritta">Estrazione in corso</p>
+  <div class="scena" id="scena">
+    <svg class="bersaglio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
+    <div class="lanci" id="lanci"></div>
     <p class="numero" id="numero">3</p>
+    <p class="scritta">Estrazione in corso</p>
   </div>
 </div>
 
@@ -506,11 +606,24 @@
   }
 
   /* -------------------------------------------------- conto alla rovescia - */
+  /* Tre secondi, tre freccette: una si pianta nel bersaglio a ogni colpo,
+     poi l'ultima fa esplodere la scena e compaiono le coppie. Gli angoli
+     e le distanze sono scelti a mano per non coprire il numero. */
+  var TIRI = [
+    { angolo: 208, raggio: .34 },
+    { angolo: -16, raggio: .38 },
+    { angolo: 118, raggio: .30 }
+  ];
+
   function contoAllaRovescia(quando){
     var sipario = document.getElementById('sipario');
+    var scena = document.getElementById('scena');
+    var lanci = document.getElementById('lanci');
     var numero = document.getElementById('numero');
     var n = 3;
 
+    scena.classList.remove('via');
+    lanci.innerHTML = '';
     sipario.hidden = false;
     mostra(n);
 
@@ -518,8 +631,11 @@
       n--;
       if(n === 0){
         clearInterval(passo);
-        sipario.hidden = true;
-        quando();
+        scena.classList.add('via');
+        setTimeout(function(){
+          sipario.hidden = true;
+          quando();
+        }, 420);
         return;
       }
       mostra(n);
@@ -530,6 +646,19 @@
       numero.classList.remove('battito');
       void numero.offsetWidth;          // riavvia l'animazione
       numero.classList.add('battito');
+      tira(3 - v);
+    }
+
+    function tira(i){
+      var t = TIRI[i];
+      if(!t) return;
+      var meta = lanci.clientWidth / 2;
+      var f = document.createElement('div');
+      f.className = 'freccia';
+      f.style.setProperty('--a', t.angolo + 'deg');
+      f.style.setProperty('--r', Math.round(meta * t.raggio) + 'px');
+      f.innerHTML = '<svg viewBox="0 0 112 24"><use href="#freccetta"/></svg>';
+      lanci.appendChild(f);
     }
   }
 
@@ -611,8 +740,7 @@
     document.body.classList.add('conCoppie');
     window.scrollTo(0, 0);
 
-    var avvia = document.getElementById('avvia');
-    avvia.textContent = 'Rifai l\'estrazione';
+    document.getElementById('etichettaAvvia').textContent = 'Rifai l\'estrazione';
     mettiTornaIndietro();
   }
 
@@ -642,7 +770,7 @@
       document.getElementById('vistaCoppie').hidden = true;
       document.getElementById('vistaElenco').hidden = false;
       document.body.classList.remove('conCoppie');
-      document.getElementById('avvia').textContent = 'Avvia estrazione';
+      document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
       b.remove();
       window.scrollTo(0, 0);
     });
