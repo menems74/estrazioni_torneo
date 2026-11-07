@@ -19,6 +19,10 @@
   })();
 </script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icona-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Estrazione">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -75,6 +79,8 @@
     --disco:rgba(255,255,255,.14);
   }
   *{box-sizing:border-box;margin:0}
+  /* "hidden" deve vincere sempre: una classe con display lo scavalcherebbe */
+  [hidden]{display:none!important}
   html{-webkit-text-size-adjust:100%}
   body{
     background:var(--bg); color:var(--ink); font-family:var(--font-display);
@@ -145,6 +151,20 @@
   .stato button[aria-pressed="true"]{background:var(--blocco);color:var(--su-blocco)}
   .stato button.bye[aria-pressed="true"]{background:var(--muted);color:var(--su-muted)}
 
+  /* --- il piede: installazione e firma --- */
+  .piede{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  .installa{display:inline-flex;align-items:center;gap:10px;background:transparent;
+    border:2px solid var(--ink);border-radius:999px;padding:0 22px;min-height:48px;
+    font:600 15px var(--font-sans)}
+  .installa:active{background:var(--ink);color:var(--paper)}
+  .installa svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .istruzioni{font:400 14px/1.55 var(--font-sans);color:var(--muted);max-width:36ch}
+  .istruzioni b{color:var(--ink);font-weight:600}
+  .firma{font:500 12px var(--font-sans);color:var(--muted);letter-spacing:.04em}
+  .firma a{border-bottom:1px solid var(--filo);padding-bottom:3px}
+  .firma a:active{color:var(--ink);border-bottom-color:var(--ink)}
+
   /* --- la barra con il pulsantone, sempre a portata di pollice --- */
   body.conCoppie .pagina{padding-bottom:210px}
   .barra{
@@ -170,7 +190,6 @@
     position:fixed;inset:0;z-index:20;background:var(--blocco);color:var(--su-blocco);
     display:grid;place-items:center;text-align:center;padding:24px;
   }
-  .sipario[hidden]{display:none!important}
   .sipario .scritta{font:600 clamp(18px,4vw,28px) var(--font-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--evidenza)}
   .sipario .numero{
     font:800 clamp(140px,44vw,320px)/1 var(--font-display);letter-spacing:-.04em;
@@ -284,6 +303,23 @@
     </div>
     <div class="coppie" id="coppie"></div>
   </section>
+
+  <footer class="piede">
+    <button class="installa" type="button" id="installa" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/>
+        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+      </svg>
+      Installa App
+    </button>
+    <p class="istruzioni" id="istruzioni" hidden>
+      Tocca <b>Condividi</b> in fondo allo schermo, poi <b>Aggiungi a Home</b>:
+      resta un'icona sul telefono e si apre senza il browser intorno.
+    </p>
+    <p class="firma">
+      <a href="https://www.instagram.com/rems_2.0_" target="_blank" rel="noopener">Powered by Rems</a>
+    </p>
+  </footer>
 </div>
 
 <div class="barra">
@@ -634,6 +670,57 @@
   document.getElementById('nomiDaCapo').addEventListener('click', function(){
     giocatori = vuoti(giocatori.length); salva(); disegnaElenco();
   });
+
+  /* ------------------------------------------------- installa in tasca -
+     Android avvisa il browser con beforeinstallprompt: allora il tasto
+     compare e apre la finestra vera. iPhone non lo fa, lo si aggiunge a
+     mano dal menu Condividi: li' il tasto mostra le istruzioni. Se la
+     pagina gira gia' come app, il tasto non serve e resta nascosto. */
+  var tastoInstalla = document.getElementById('installa');
+  var istruzioni = document.getElementById('istruzioni');
+  var invito = null;
+
+  function giaInstallata(){
+    return (window.matchMedia && matchMedia('(display-mode: standalone)').matches)
+        || navigator.standalone === true;
+  }
+  function suIphone(){
+    return /iPad|iPhone|iPod/.test(navigator.userAgent)
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    invito = e;
+    if(!giaInstallata()) tastoInstalla.hidden = false;
+  });
+
+  tastoInstalla.addEventListener('click', function(){
+    if(invito){
+      invito.prompt();
+      invito.userChoice.then(function(scelta){
+        if(scelta.outcome === 'accepted') tastoInstalla.hidden = true;
+        invito = null;
+      });
+    }else{
+      istruzioni.hidden = !istruzioni.hidden;
+    }
+  });
+
+  window.addEventListener('appinstalled', function(){
+    tastoInstalla.hidden = true;
+    istruzioni.hidden = true;
+  });
+
+  if(suIphone() && !giaInstallata()) tastoInstalla.hidden = false;
+
+  if('serviceWorker' in navigator && location.protocol === 'https:'){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){
+        /* niente guardiano: la pagina funziona lo stesso, solo online */
+      });
+    });
+  }
 
   /* ------------------------------------------------------- chiaro/scuro -
      Chi non sceglie segue il telefono, anche se cambia a pagina aperta.

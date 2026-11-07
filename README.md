@@ -30,11 +30,25 @@ Nomi e stato restano scritti nel browser di chi la usa (`localStorage`):
 alla riapertura il tabellone è quello di prima. Non vengono inviati da
 nessuna parte, non c'è un server.
 
+## Installarla sul telefono
+
+In fondo alla pagina c'è **Installa App**. Su Android apre la finestra del
+telefono e l'icona finisce nel cassetto delle applicazioni; su iPhone il
+tasto spiega la strada, che lì è a mano: *Condividi* → *Aggiungi a Home*.
+Installata, si apre a tutto schermo senza il browser intorno e funziona
+anche senza linea.
+
 ## Cosa c'è dentro
 
-Un file solo, `index.html`, con dentro struttura, stile e codice. Niente
-librerie da installare, niente passaggio di compilazione. Per provarla in
-locale basta aprirlo con un doppio clic, oppure:
+`index.html` è l'app intera: struttura, stile e codice in un file solo,
+senza librerie da installare e senza passaggio di compilazione. Intorno ci
+sono soltanto i pezzi che servono per l'installazione sul telefono —
+`manifest.webmanifest`, `sw.js` (che tiene la pagina in cache per l'uso
+senza linea) e le due icone `icona-192.png` e `icona-512.png`.
+
+Per provarla in locale basta aprire `index.html` con un doppio clic; il
+tasto *Installa App* però compare solo servendo i file in https, quindi
+dal sito pubblicato. In locale:
 
 ```bash
 python3 -m http.server 8000   # poi http://localhost:8000
