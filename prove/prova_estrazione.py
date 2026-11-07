@@ -8,10 +8,11 @@ IPHONE = ("Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/60
 
 def elenco_e_sorteggio(ctx, sito, dire):
     a = App(ctx, sito)
-    assert a.pg.locator(".testa-lista p").count() == 0, "la descrizione doveva sparire"
-    assert a.pg.locator(".testa-lista .marchio").is_visible(), "manca il bersaglio nella testata"
-    riga = a.pg.locator(".riga").bounding_box()
-    testa = a.pg.locator(".testa-lista").bounding_box()
+    assert a.pg.locator("#vistaElenco .testa-lista p").count() == 0, "la descrizione doveva sparire"
+    assert a.pg.locator("#vistaElenco .testa-lista .marchio").is_visible(), \
+        "manca il bersaglio nella testata"
+    riga = a.pg.locator("#vistaElenco .riga").bounding_box()
+    testa = a.pg.locator("#vistaElenco .testa-lista").bounding_box()
     assert riga["y"] >= testa["y"] + testa["height"] - 2
     assert a.largo() <= 390, "deborda di lato"
     a.estrai()

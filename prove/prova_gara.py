@@ -95,21 +95,23 @@ def riprende_e_si_chiude(ctx, sito, dire):
     a.pg.click("#chiudiGara"); a.pg.wait_for_timeout(350)
     assert a.vista() == "elenco"
     a.pg.reload(); a.pg.wait_for_timeout(700)
-    assert a.vista() == "elenco", "la gara chiusa non doveva tornare"
+    # senza gara aperta si riparte dalla scelta del torneo
+    assert a.vista() == "scelta", "la gara chiusa non doveva tornare: %s" % a.vista()
     dire("la gara sopravvive al ricaricamento e, chiusa, non torna")
     a.chiudi()
 
 
 def sedici_caselle(ctx, sito, dire):
     a = App(ctx, sito)
-    assert a.pg.locator("#meno").count() == 0 and a.pg.locator(".quanti").count() == 0, \
+    assert a.pg.locator("#meno").count() == 0 and a.pg.locator("#vistaElenco .quanti").count() == 0, \
         "c'e' ancora il selettore del numero"
-    assert a.pg.locator(".giocatore").count() == 16
+    assert a.pg.locator("#vistaElenco .giocatore").count() == 16
     a.pg.evaluate("localStorage.setItem('estrazione-torneo:giocatori', JSON.stringify("
                   "[{nome:'Tizio',bye:false},{nome:'Caio',bye:true}]))")
     a.pg.reload(); a.pg.wait_for_timeout(500)
-    assert a.pg.locator(".giocatore").count() == 16
-    assert a.pg.locator(".nome").first.input_value() == "Tizio"
+    a.pg.click("#scegliTabellone"); a.pg.wait_for_timeout(300)
+    assert a.pg.locator("#vistaElenco .giocatore").count() == 16
+    assert a.pg.locator("#vistaElenco .nome").first.input_value() == "Tizio"
     dire("sedici caselle fisse, e le liste corte di prima si allungano")
     a.chiudi()
 

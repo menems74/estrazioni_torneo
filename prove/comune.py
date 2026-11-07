@@ -72,7 +72,7 @@ def browser(pw):
 class App:
     """L'app aperta in una pagina, con i gesti che servono alle prove."""
 
-    def __init__(self, contesto, indirizzo, bye=(), tema="scuro"):
+    def __init__(self, contesto, indirizzo, bye=(), tema="scuro", formato="tabellone"):
         self.errori = []
         self.pg = contesto.new_page()
         self.pg.on("console", self._console)
@@ -84,8 +84,12 @@ class App:
             "localStorage.setItem('estrazione-torneo:tema', '%s');"
             "sessionStorage.setItem('pronto','1');}"
             % (json.dumps(json.dumps(giocatori(bye))), tema))
-        self.pg.goto(indirizzo)
+        self.pg.goto(indirizzo + ("#girone" if formato == "girone" else ""))
         self.pg.wait_for_timeout(400)
+        # la prima schermata chiede che torneo si organizza
+        if formato == "tabellone":
+            self.pg.click("#scegliTabellone")
+            self.pg.wait_for_timeout(300)
 
     def _console(self, m):
         # il 404 della favicon non e' un errore della pagina
@@ -93,10 +97,14 @@ class App:
             self.errori.append(m.type + ": " + m.text)
 
     # ---------------------------------------------------------- navigare --
+    VISTE = [("Scelta", "scelta"), ("Elenco", "elenco"), ("Coppie", "coppie"),
+             ("Gara", "gara"), ("Tabellone", "tabellone"),
+             ("GirElenco", "gelenco"), ("GirGara", "ggara")]
+
     def vista(self):
-        for n in ("Elenco", "Coppie", "Gara", "Tabellone"):
-            if self.pg.locator("#vista" + n).is_visible():
-                return n.lower()
+        for ident, nome in self.VISTE:
+            if self.pg.locator("#vista" + ident).is_visible():
+                return nome
         return "?"
 
     def estrai(self):

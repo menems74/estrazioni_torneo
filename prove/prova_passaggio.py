@@ -39,7 +39,7 @@ def link_di_passaggio(ctx, sito, dire):
     # un altro apparecchio: contesto nuovo, archivio vuoto
     b = ctx.browser.new_context(viewport={"width": 390, "height": 844})
     pg = b.new_page()
-    pg.goto(via); pg.wait_for_timeout(700)
+    pg.goto(via); pg.wait_for_timeout(800)
     assert pg.locator("#invito").is_visible(), "doveva chiedere, non aprirsi da sola"
     assert "%d partite segnate" % fatte in pg.locator("#invitoTesto").inner_text(), \
         pg.locator("#invitoTesto").inner_text()
@@ -76,16 +76,16 @@ def link_rifiutato_e_rotto(ctx, sito, dire):
     b = ctx.browser.new_context(viewport={"width": 390, "height": 844})
     pg = b.new_page()
     # si può dire di no
-    pg.goto(via); pg.wait_for_timeout(700)
+    pg.goto(via); pg.wait_for_timeout(800)
     pg.click("#invitoNo"); pg.wait_for_timeout(300)
     assert pg.locator("#invito").is_hidden() and pg.locator("#vistaElenco").is_visible()
     assert pg.evaluate("localStorage.getItem('estrazione-torneo:gara')") is None, \
         "aver detto no non deve lasciare niente"
     # un link storpiato non apre niente e lo dice
-    pg.goto(via[:-12] + "zzzzzzzzzzzz"); pg.wait_for_timeout(700)
-    assert pg.locator("#vistaElenco").is_visible()
+    # a pagina gia' aperta cambia solo la coda dell'indirizzo: niente ricaricamento
+    pg.goto(via[:-12] + "zzzzzzzzzzzz"); pg.wait_for_timeout(800)
     assert pg.locator("#invito").is_hidden(), "un link rotto non deve proporre niente"
-    assert pg.locator("#allarme").is_visible()
+    assert pg.locator("#allarme").is_visible(), "e deve dirlo"
     pg.close(); b.close()
     dire("link: si può rifiutare, e uno spezzato non apre niente")
 
@@ -99,6 +99,7 @@ def nomi_con_dentro_del_codice(ctx, sito, dire):
         const lista = [...Array(16)].map((_,i) => ({nome: i===0 ? brutto : 'G'+(i+1), bye:false}));
         localStorage.setItem('estrazione-torneo:giocatori', JSON.stringify(lista)); }""")
     a.pg.reload(); a.pg.wait_for_timeout(500)
+    a.pg.click("#scegliTabellone"); a.pg.wait_for_timeout(300)
     a.estrai_e_parti()
     a.vince(a.pronte()[0]["n"])
     a.vince(a.pronte()[0]["n"])
@@ -132,6 +133,7 @@ def copia_su_file(ctx, sito, dire):
     b = ctx.browser.new_context(viewport={"width": 390, "height": 844}, accept_downloads=True)
     pg = b.new_page()
     pg.goto(sito); pg.wait_for_timeout(500)
+    pg.click("#scegliTabellone"); pg.wait_for_timeout(300)
     pg.set_input_files("#fileCopia", dove)
     pg.wait_for_timeout(600)
     assert pg.locator("#invito").is_visible(), "anche il file deve chiedere prima di aprire"

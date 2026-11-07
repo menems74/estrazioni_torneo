@@ -48,8 +48,11 @@ def tasto_indietro(ctx, sito, dire):
     a.pg.reload(); a.pg.wait_for_timeout(700)
     assert a.vista() == "gara"
     a.pg.go_back(); a.pg.wait_for_timeout(350)
-    assert a.vista() == "elenco", "riaperta l'app, indietro deve restare dentro: %s" % a.vista()
-    a.pg.click("#ripresa"); a.pg.wait_for_timeout(350)
+    # riaperta l'app la strada e' scelta -> gara, quindi indietro porta alla scelta
+    assert a.vista() == "scelta", "riaperta l'app, indietro deve restare dentro: %s" % a.vista()
+    assert "in corso" in a.pg.locator("#scegliTabellone .eti").inner_text().lower(), \
+        "la scelta deve dire che c'e' una gara aperta"
+    a.pg.click("#scegliTabellone"); a.pg.wait_for_timeout(350)
     assert a.vista() == "gara" and a.conta()[0] == segnate
     dire("indietro ripercorre la strada e non butta mai fuori dall'app")
     a.chiudi()
@@ -83,7 +86,7 @@ def archivio(ctx, sito, dire):
     a.pg.evaluate("() => { const g = JSON.parse(localStorage.getItem('estrazione-torneo:gara'));"
                   "g.v = 99; localStorage.setItem('estrazione-torneo:gara', JSON.stringify(g)); }")
     a.pg.reload(); a.pg.wait_for_timeout(700)
-    assert a.vista() == "elenco"
+    assert a.vista() == "scelta", a.vista()
     assert a.pg.locator("#allarme").is_visible()
     assert "versione più nuova" in a.pg.locator("#allarme").inner_text()
     assert a.pg.evaluate("localStorage.getItem('estrazione-torneo:gara')"), "non doveva cancellarla"

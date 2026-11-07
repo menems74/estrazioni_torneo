@@ -13,6 +13,7 @@ from playwright.sync_api import sync_playwright
 
 import comune
 import prova_estrazione, prova_gara, prova_tabellone, prova_stabilita, prova_passaggio
+import prova_girone
 
 GRUPPI = [
     ("estrazione", prova_estrazione),
@@ -20,6 +21,7 @@ GRUPPI = [
     ("tabellone",  prova_tabellone),
     ("stabilita",  prova_stabilita),
     ("passaggio",  prova_passaggio),
+    ("girone",     prova_girone),
 ]
 IPHONE = prova_estrazione.IPHONE
 TELEFONO = {"width": 390, "height": 844}

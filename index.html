@@ -154,6 +154,15 @@
   /* --- i sedici --- */
   .strumenti{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0 0 var(--gap)}
   .strumenti .riga{display:flex;gap:10px;flex-wrap:wrap}
+  .quanti{display:flex;align-items:center;gap:6px;background:var(--blocco);color:var(--su-blocco);
+    border-radius:999px;padding:4px 6px 4px 18px}
+  .quanti .etichetta{font:600 14px var(--font-sans);margin-right:4px}
+  .quanti button{width:48px;min-height:48px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.22);color:var(--su-blocco);font:800 24px/1 var(--font-display)}
+  .quanti button:active{background:var(--evidenza);color:var(--blocco)}
+  .quanti output{min-width:50px;text-align:center;font:800 26px var(--font-display);
+    color:var(--evidenza);font-variant-numeric:tabular-nums}
+
   /* solo i due tasti della seconda riga: se no questa regola rubava anche
      i tondi - e +, che dentro la pill nera restavano senza contorno */
   .riga button{background:transparent;border:2px solid var(--ink);border-radius:999px;
@@ -185,6 +194,49 @@
   }
   .stato button[aria-pressed="true"]{background:var(--blocco);color:var(--su-blocco)}
   .stato button.bye[aria-pressed="true"]{background:var(--muted);color:var(--su-muted)}
+
+  /* --- la scelta del torneo --- */
+  .formati{display:grid;gap:12px}
+  @media (min-width:760px){.formati{grid-template-columns:1fr 1fr}}
+  .formato{position:relative;display:block;width:100%;text-align:left;background:var(--paper);
+    border:0;border-radius:var(--radius);padding:20px 22px 22px;color:inherit}
+  .formato .eti{display:inline-block;font:600 11px var(--font-sans);letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .formato h3{font:800 clamp(22px,5vw,28px)/1.1 var(--font-display);letter-spacing:-.02em;
+    margin-bottom:8px;max-width:16ch}
+  .formato p{font:400 14px/1.5 var(--font-sans);color:var(--muted);max-width:40ch}
+  .formato .go{position:absolute;right:20px;top:20px;width:44px;height:44px;border-radius:50%;
+    background:var(--azione);color:var(--su-azione);display:grid;place-items:center;
+    font:800 20px var(--font-display)}
+  .formato .eti,.formato h3{padding-right:58px}
+  .formato.spento{background:transparent;border:2px dashed var(--filo)}
+  .formato.spento .eti{color:var(--evidenza)}
+  .formato.spento .go{background:var(--tasto-spento);color:var(--muted)}
+  .formato:disabled{cursor:not-allowed}
+
+  /* --- il girone --- */
+  .prova{margin-bottom:var(--gap)}
+  .girAvvia{margin-top:var(--gap)}
+  .elenco.uno{grid-template-columns:1fr}
+  .turno{font:600 11px var(--font-sans);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin:16px 0 8px}
+  .turno:first-child{margin-top:0}
+  .tabella{display:grid;gap:6px}
+  .tabella .capofila,.tabella .voce{display:grid;grid-template-columns:34px 1fr 34px 34px 46px;
+    gap:8px;align-items:center;padding:9px 12px;border-radius:12px}
+  .tabella .capofila{font:600 11px var(--font-sans);letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);padding-bottom:2px}
+  .tabella .voce{background:var(--paper);min-height:52px}
+  .tabella .voce.primo{background:var(--blocco);color:var(--su-blocco)}
+  .tabella .voce .pst{font:800 16px var(--font-display);color:var(--muted)}
+  .tabella .voce.primo .pst{color:var(--evidenza)}
+  .tabella .voce .chi{font:700 17px var(--font-display);letter-spacing:-.01em;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tabella .voce .num{font:600 15px var(--font-sans);text-align:center;background:none;
+    width:auto;height:auto;border-radius:0;display:block;color:var(--muted)}
+  .tabella .voce.primo .num{color:var(--su-blocco)}
+  .tabella .voce .pti{font:800 19px var(--font-display);text-align:right;font-variant-numeric:tabular-nums}
+  .tabella .pari{font:500 13px/1.5 var(--font-sans);color:var(--muted);padding:4px 12px}
 
   /* --- la gara: una fila di partite da chiamare --- */
   .stato-gara{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 4px}
@@ -275,7 +327,8 @@
   .dopo button.chiudi{width:100%;max-width:440px;margin:0 auto;border-color:var(--rosso);
     color:var(--rosso);min-height:58px;font:700 17px var(--font-sans)}
   .dopo button.chiudi[data-sicuro="1"]{background:var(--rosso);color:var(--paper);border-color:var(--rosso)}
-  body.inGara .barra{display:none}
+  body.inGara .barra,body.senzaBarra .barra{display:none}
+  body.senzaBarra .pagina{padding-bottom:40px}
   body.inGara .conta{display:none}   /* presenti e bye: conta prima del via, non dopo */
   body.inGara .pagina{padding-bottom:40px}
 
@@ -575,6 +628,32 @@
     <p class="conta" id="conta"></p>
   </div>
 
+  <!-- ===== schermata 0: che torneo si organizza ===== -->
+  <section id="vistaScelta" hidden>
+    <div class="testata testa-lista">
+      <h1>Che torneo organizzi?</h1>
+      <svg class="marchio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
+    </div>
+
+    <div class="formati">
+      <button type="button" class="formato" id="scegliTabellone">
+        <span class="eti">16 giocatori · 31 partite</span>
+        <h3>Tabellone 16 doppio K.O.</h3>
+        <p>Si esce alla seconda sconfitta. Girone vincenti, girone perdenti,
+           e chi arriva dai perdenti deve vincere due volte la finale.</p>
+        <span class="go" aria-hidden="true">&#8594;</span>
+      </button>
+
+      <button type="button" class="formato spento" id="scegliGirone" disabled>
+        <span class="eti" id="etiGirone">In arrivo</span>
+        <h3>Girone all'italiana</h3>
+        <p>Tutti contro tutti, una partita per coppia, classifica a punti.
+           Da tre a dieci giocatori.</p>
+        <span class="go" aria-hidden="true">&#8594;</span>
+      </button>
+    </div>
+  </section>
+
   <!-- ===== schermata 1: chi c'è ===== -->
   <section id="vistaElenco">
     <div class="invito" id="invito" hidden>
@@ -650,6 +729,61 @@
     </div>
   </section>
 
+  <!-- ===== il girone: chi gioca ===== -->
+  <section id="vistaGirElenco" hidden>
+    <div class="testata testa-lista">
+      <h1>Girone all'italiana</h1>
+      <svg class="marchio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
+    </div>
+
+    <p class="nota prova">Questo formato è in prova: le regole si possono ancora
+       cambiare. Vittoria 2 punti, sconfitta 0, nessun pareggio.</p>
+
+    <div class="strumenti">
+      <div class="quanti">
+        <span class="etichetta" id="etiQuantiGir">Giocatori</span>
+        <button type="button" id="girMeno" aria-label="Un giocatore in meno">&#8722;</button>
+        <output id="girNumero" aria-labelledby="etiQuantiGir">6</output>
+        <button type="button" id="girPiu" aria-label="Un giocatore in piu">+</button>
+      </div>
+      <div class="riga">
+        <button type="button" id="girNomiDaCapo">Rimetti i nomi</button>
+      </div>
+    </div>
+
+    <div class="elenco uno" id="girElenco"></div>
+
+    <button class="avvia girAvvia" type="button" id="girInizia">
+      <svg class="dardo" viewBox="0 0 112 24" aria-hidden="true"><use href="#freccetta"/></svg>
+      <span>Avvia il girone</span>
+    </button>
+    <p class="nota" id="girAvviso"></p>
+  </section>
+
+  <!-- ===== il girone: la gara ===== -->
+  <section id="vistaGirGara" hidden>
+    <div class="stato-gara">
+      <span class="pill">Girone · <b id="girConta">0</b> di <span id="girTotali">0</span></span>
+      <span class="pill">Giocatori <b id="girQuanti">0</b></span>
+    </div>
+
+    <div class="vinta" id="girVinta" hidden></div>
+
+    <h2 class="titoloGara" id="girTitoloDa">Da chiamare <small>tocca chi ha vinto</small></h2>
+    <p class="scarto" id="girScarto" role="status" hidden>Tocco troppo veloce: non l'ho contato, rifallo.</p>
+    <div id="girDaFare"></div>
+
+    <h2 class="titoloGara" id="girTitoloFatte">Fatte</h2>
+    <div class="fatte" id="girStoria"></div>
+
+    <h2 class="titoloGara">Classifica</h2>
+    <div class="tabella" id="girClassifica"></div>
+
+    <div class="dopo">
+      <button type="button" class="chiudi" id="girChiudi">Chiudi il girone</button>
+    </div>
+  </section>
+
   <!-- ===== schermata 4: il tabellone intero, da guardare e da stampare ===== -->
   <section id="vistaTabellone" hidden>
     <div class="capoTab">
@@ -709,7 +843,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.4';        // si legge in fondo alla pagina
+  var VERSIONE = '1.5';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
@@ -1593,19 +1727,25 @@
      =================================================================== */
   var vistaOra = 'elenco';
 
+  var SEZIONI = {
+    scelta:'vistaScelta', elenco:'vistaElenco', coppie:'vistaCoppie',
+    gara:'vistaGara', tabellone:'vistaTabellone',
+    gelenco:'vistaGirElenco', ggara:'vistaGirGara'
+  };
+
   function apriVista(nome){
-    var e = nome === 'elenco', c = nome === 'coppie',
-        g = nome === 'gara',   t = nome === 'tabellone';
-    document.getElementById('vistaElenco').hidden = !e;
-    document.getElementById('vistaCoppie').hidden = !c;
-    document.getElementById('vistaGara').hidden = !g;
-    document.getElementById('vistaTabellone').hidden = !t;
-    document.body.classList.toggle('conCoppie', c);
-    document.body.classList.toggle('inGara', g || t);
-    document.body.classList.toggle('nelTabellone', t);
+    Object.keys(SEZIONI).forEach(function(k){
+      document.getElementById(SEZIONI[k]).hidden = (k !== nome);
+    });
+    document.body.classList.toggle('conCoppie', nome === 'coppie');
+    document.body.classList.toggle('inGara', nome === 'gara' || nome === 'tabellone');
+    document.body.classList.toggle('nelTabellone', nome === 'tabellone');
+    document.body.classList.toggle('senzaBarra',
+      nome === 'scelta' || nome === 'gelenco' || nome === 'ggara');
     vistaOra = nome;
 
-    if(e){
+    if(nome === 'scelta') disegnaScelta();
+    if(nome === 'elenco'){
       /* tornando all'elenco con il tasto indietro il pulsantone deve
          tornare quello che e': prima restava quello delle coppie, con
          la scritta giusta ma il gesto sbagliato */
@@ -1613,10 +1753,14 @@
       document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
       disegnaElenco(); disegnaRipresa(); viaICollegamenti();
     }
-    if(c) piediCoppie();
-    if(g) disegnaGara();
-    if(t) disegnaTabellone();
-    if(g || t) tieniSveglio(); else lasciaDormire();
+    if(nome === 'coppie') piediCoppie();
+    if(nome === 'gara') disegnaGara();
+    if(nome === 'tabellone') disegnaTabellone();
+    if(nome === 'gelenco') disegnaGirElenco();
+    if(nome === 'ggara') disegnaGirGara();
+
+    if(nome === 'gara' || nome === 'tabellone' || nome === 'ggara') tieniSveglio();
+    else lasciaDormire();
     window.scrollTo(0, 0);
   }
   function vaiA(nome){
@@ -1634,6 +1778,8 @@
        persa con il ricaricamento. In quel caso si torna all'elenco. */
     if((v === 'gara' || v === 'tabellone') && !gara) v = 'elenco';
     if(v === 'coppie' && !ultimaEstrazione) v = 'elenco';
+    if(v === 'ggara' && !girone) v = 'gelenco';
+    if(v === 'gelenco' && !gironeAperto()) v = 'scelta';
     apriVista(v);
   });
 
@@ -1976,6 +2122,423 @@
     return nuova;
   }
 
+
+  /* ===================================================================
+     IL GIRONE ALL'ITALIANA — in prova
+
+     Tutti contro tutti, una partita per coppia. Vittoria 2 punti,
+     sconfitta 0, nessun pareggio: alle freccette una partita finisce
+     sempre con un vincitore.
+
+     L'ordine delle partite non e' casuale: si usa il metodo del cerchio,
+     quello con cui si fanno i calendari dei campionati. Tiene fermo il
+     primo giocatore e fa ruotare gli altri, cosi' dentro ogni turno
+     nessuno gioca due volte e chi ha appena finito non e' subito
+     richiamato. Con un numero dispari, a ogni turno uno riposa.
+
+     Questo formato e' ancora una prova: e' chiuso dietro un indirizzo
+     apposta, e le sue regole si possono cambiare senza toccare il
+     tabellone da 16.
+     =================================================================== */
+  var CHIAVE_GIR = 'estrazione-torneo:girone';
+  var CHIAVE_GIR_NOMI = 'estrazione-torneo:girone-nomi';
+  var CHIAVE_PROVA = 'estrazione-torneo:in-prova';
+  var GIR_MIN = 3, GIR_MAX = 10, GIR_PREDEF = 6;
+  var PUNTI_VITTORIA = 2;
+  var FORMATO_GIR = 'girone', FORMATO_GIR_V = 1;
+
+  var girNomi = leggiGirNomi();
+  var girone = leggiGirone();
+
+  function gironeAperto(){
+    try{ return localStorage.getItem(CHIAVE_PROVA) === 'girone'; }catch(e){ return false; }
+  }
+  function apriIlGirone(){
+    scrivi(CHIAVE_PROVA, 'girone');
+  }
+
+  function leggiGirNomi(){
+    try{
+      var n = JSON.parse(localStorage.getItem(CHIAVE_GIR_NOMI));
+      if(Array.isArray(n) && n.length >= GIR_MIN && n.length <= GIR_MAX){
+        return n.map(function(x){ return String(x || ''); });
+      }
+    }catch(e){}
+    var vuoti = [];
+    for(var i = 0; i < GIR_PREDEF; i++) vuoti.push('');
+    return vuoti;
+  }
+  function salvaGirNomi(){ scrivi(CHIAVE_GIR_NOMI, JSON.stringify(girNomi)); }
+
+  function leggiGirone(){
+    var g;
+    try{ g = JSON.parse(localStorage.getItem(CHIAVE_GIR)); }catch(e){ return null; }
+    if(!g || g.formato !== FORMATO_GIR || !Array.isArray(g.nomi) || !g.esiti) return null;
+    if(g.nomi.length < GIR_MIN || g.nomi.length > GIR_MAX) return null;
+    if((g.v || 1) > FORMATO_GIR_V){
+      disegnaAllarme('C\'è un girone salvato da una versione più nuova dell\'app.');
+      return null;
+    }
+    return g;
+  }
+  function salvaGirone(){
+    if(girone) scrivi(CHIAVE_GIR, JSON.stringify(girone));
+    else cancella(CHIAVE_GIR);
+  }
+
+  function girNomeDi(i){
+    return (girone.nomi[i] || '').trim() || ('Giocatore ' + (i + 1));
+  }
+
+  /* ----------------------------------------- il calendario dei turni --- */
+  function calendario(n){
+    var posti = [];
+    for(var i = 0; i < n; i++) posti.push(i);
+    if(n % 2) posti.push(-1);                 /* il posto di chi riposa */
+    var m = posti.length, turni = [];
+    for(var t = 0; t < m - 1; t++){
+      var turno = [];
+      for(var k = 0; k < m / 2; k++){
+        var a = posti[k], b = posti[m - 1 - k];
+        if(a === -1 || b === -1) continue;
+        /* si alterna chi sta sopra, cosi' nessuno e' sempre il primo */
+        turno.push(t % 2 ? { a:b, b:a } : { a:a, b:b });
+      }
+      turni.push(turno);
+      posti.splice(1, 0, posti.pop());        /* ruota tenendo fermo il primo */
+    }
+    return turni;
+  }
+
+  function girPartite(){
+    var fuori = [];
+    calendario(girone.nomi.length).forEach(function(turno, t){
+      turno.forEach(function(p){ fuori.push({ t:t + 1, a:p.a, b:p.b }); });
+    });
+    return fuori;
+  }
+
+  /* -------------------------------------------------- la classifica ---- */
+  function girClassifica(){
+    var P = girPartite(), n = girone.nomi.length, dati = [];
+    for(var i = 0; i < n; i++) dati.push({ i:i, g:0, v:0, p:0, pt:0 });
+    P.forEach(function(m, k){
+      var e = girone.esiti[k];
+      if(!e) return;
+      var vince = e === 'a' ? m.a : m.b, perde = e === 'a' ? m.b : m.a;
+      dati[vince].g++; dati[vince].v++; dati[vince].pt += PUNTI_VITTORIA;
+      dati[perde].g++; dati[perde].p++;
+    });
+
+    dati.sort(function(x, y){ return y.pt - x.pt || x.i - y.i; });
+
+    /* A pari punti conta lo scontro diretto: fra i pari merito si rifa'
+       una classifichina con le sole partite giocate fra loro. */
+    var fuori = [], k = 0;
+    while(k < dati.length){
+      var j = k;
+      while(j + 1 < dati.length && dati[j + 1].pt === dati[k].pt) j++;
+      var gruppo = dati.slice(k, j + 1);
+      if(gruppo.length > 1) gruppo = perScontroDiretto(gruppo, P);
+      else gruppo[0].mini = 0;
+      fuori = fuori.concat(gruppo);
+      k = j + 1;
+    }
+
+    /* le posizioni: chi ha gli stessi numeri sta allo stesso posto */
+    var posto = 0, pari = false;
+    fuori.forEach(function(r, idx){
+      var prima = fuori[idx - 1];
+      if(prima && prima.pt === r.pt && prima.mini === r.mini){
+        r.posto = prima.posto; r.pari = prima.pari = true; pari = true;
+      }else{
+        posto = idx + 1; r.posto = posto; r.pari = false;
+      }
+    });
+    fuori.cePariMerito = pari;
+    return fuori;
+  }
+
+  function perScontroDiretto(gruppo, P){
+    var dentro = {};
+    gruppo.forEach(function(r){ dentro[r.i] = 0; });
+    P.forEach(function(m, k){
+      var e = girone.esiti[k];
+      if(!e) return;
+      if(!(m.a in dentro) || !(m.b in dentro)) return;
+      dentro[e === 'a' ? m.a : m.b] += PUNTI_VITTORIA;
+    });
+    gruppo.forEach(function(r){ r.mini = dentro[r.i]; });
+    gruppo.sort(function(x, y){ return y.mini - x.mini || x.i - y.i; });
+    return gruppo;
+  }
+
+  function girFinito(){
+    return Object.keys(girone.esiti).length === girPartite().length;
+  }
+
+  /* ----------------------------------------------------- i risultati --- */
+  function girSegna(k, lato){
+    if(girTroppoPresto()) return;
+    girone.esiti[k] = lato;
+    salvaGirone(); disegnaGirGara();
+  }
+  function girAnnulla(k){
+    if(girTroppoPresto()) return;
+    delete girone.esiti[k];
+    salvaGirone(); disegnaGirGara();
+  }
+
+  var girUltimoTocco = 0, girScartoVia = null;
+  function girTroppoPresto(){
+    var ora = Date.now();
+    if(ora - girUltimoTocco < 300){
+      var p = document.getElementById('girScarto');
+      p.hidden = false;
+      clearTimeout(girScartoVia);
+      girScartoVia = setTimeout(function(){ p.hidden = true; }, 2500);
+      return true;
+    }
+    girUltimoTocco = ora;
+    return false;
+  }
+
+  /* -------------------------------------------------- chi gioca -------- */
+  function disegnaGirElenco(){
+    var dove = document.getElementById('girElenco');
+    dove.innerHTML = '';
+    girNomi.forEach(function(nome, i){
+      var riga = document.createElement('div');
+      riga.className = 'giocatore';
+      var n = document.createElement('span');
+      n.className = 'num'; n.textContent = String(i + 1);
+      var campo = document.createElement('input');
+      campo.className = 'nome'; campo.type = 'text';
+      campo.value = nome;
+      campo.placeholder = 'Giocatore ' + (i + 1);
+      campo.setAttribute('aria-label', 'Nome del giocatore ' + (i + 1));
+      campo.addEventListener('input', function(){
+        girNomi[i] = campo.value; salvaGirNomi();
+      });
+      riga.appendChild(n); riga.appendChild(campo);
+      dove.appendChild(riga);
+    });
+    document.getElementById('girNumero').textContent = String(girNomi.length);
+  }
+
+  function girQuantiGiocatori(n){
+    n = Math.max(GIR_MIN, Math.min(GIR_MAX, n));
+    while(girNomi.length < n) girNomi.push('');
+    if(girNomi.length > n) girNomi.length = n;
+    salvaGirNomi(); disegnaGirElenco();
+  }
+
+  function iniziaGirone(){
+    if(girone){
+      /* un girone e' gia' aperto: non si butta via con un tocco solo */
+      var avviso = document.getElementById('girAvviso');
+      if(Date.now() - chiestoDiRifareGir > 6000){
+        chiestoDiRifareGir = Date.now();
+        avviso.textContent = 'C\'è un girone in corso. Premi di nuovo entro sei secondi ' +
+                             'per cancellarlo e ricominciare.';
+        return;
+      }
+      chiestoDiRifareGir = 0;
+      avviso.textContent = '';
+    }
+    girone = { formato:FORMATO_GIR, v:FORMATO_GIR_V, nata:Date.now(),
+               nomi:girNomi.slice(), esiti:{} };
+    salvaGirone();
+    vaiA('ggara');
+  }
+  var chiestoDiRifareGir = 0;
+
+  /* -------------------------------------------------- la gara ---------- */
+  function disegnaGirGara(){
+    var P = girPartite();
+    document.getElementById('girConta').textContent = String(Object.keys(girone.esiti).length);
+    document.getElementById('girTotali').textContent = String(P.length);
+    document.getElementById('girQuanti').textContent = String(girone.nomi.length);
+
+    /* --- da chiamare, raccolte per turno --- */
+    var dove = document.getElementById('girDaFare');
+    dove.innerHTML = '';
+    var turnoOra = 0, fila = null;
+    P.forEach(function(m, k){
+      if(girone.esiti[k]) return;
+      if(m.t !== turnoOra){
+        turnoOra = m.t;
+        var tit = document.createElement('p');
+        tit.className = 'turno';
+        tit.textContent = 'Turno ' + m.t;
+        dove.appendChild(tit);
+        fila = document.createElement('div');
+        fila.className = 'fila';
+        dove.appendChild(fila);
+      }
+      fila.appendChild(schedaGir(k, m));
+    });
+    document.getElementById('girTitoloDa').hidden = girFinito();
+
+    /* --- fatte --- */
+    var storia = document.getElementById('girStoria');
+    storia.innerHTML = '';
+    var fatte = Object.keys(girone.esiti).map(Number);
+    fatte.sort(function(x, y){ return y - x; });
+    fatte.forEach(function(k){
+      var m = P[k], e = girone.esiti[k];
+      var vince = e === 'a' ? m.a : m.b, perde = e === 'a' ? m.b : m.a;
+      var riga = document.createElement('div');
+      riga.className = 'esito-riga';
+      var q = document.createElement('span');
+      q.className = 'q'; q.textContent = String(k + 1);
+      var t = document.createElement('span');
+      t.className = 't';
+      t.appendChild(grassetto(girNomeDi(vince)));
+      t.appendChild(corsivo(' batte '));
+      t.appendChild(document.createTextNode(girNomeDi(perde)));
+      var x = document.createElement('button');
+      x.type = 'button'; x.className = 'x'; x.textContent = 'annulla';
+      x.addEventListener('click', function(){ girAnnulla(k); });
+      riga.appendChild(q); riga.appendChild(t); riga.appendChild(x);
+      storia.appendChild(riga);
+    });
+    document.getElementById('girTitoloFatte').innerHTML =
+      'Fatte <small>' + fatte.length + (fatte.length ? ' · tocca annulla per correggere' : '') + '</small>';
+    storia.hidden = fatte.length === 0;
+
+    /* --- classifica --- */
+    var cl = girClassifica();
+    var tab = document.getElementById('girClassifica');
+    tab.innerHTML = '';
+    var capo = document.createElement('div');
+    capo.className = 'capofila';
+    ['', 'Giocatore', 'G', 'V', 'Punti'].forEach(function(testo){
+      var c = document.createElement('span');
+      c.textContent = testo;
+      capo.appendChild(c);
+    });
+    tab.appendChild(capo);
+    cl.forEach(function(r){
+      var v = document.createElement('div');
+      v.className = 'voce' + (r.posto === 1 && girFinito() && !r.pari ? ' primo' : '');
+      var pst = document.createElement('span');
+      pst.className = 'pst'; pst.textContent = r.posto + '°';
+      var chi = document.createElement('span');
+      chi.className = 'chi'; chi.textContent = girNomeDi(r.i);
+      var g = document.createElement('span'); g.className = 'num'; g.textContent = String(r.g);
+      var vi = document.createElement('span'); vi.className = 'num'; vi.textContent = String(r.v);
+      var pt = document.createElement('span'); pt.className = 'pti'; pt.textContent = String(r.pt);
+      v.appendChild(pst); v.appendChild(chi); v.appendChild(g); v.appendChild(vi); v.appendChild(pt);
+      tab.appendChild(v);
+    });
+    if(cl.cePariMerito){
+      var nota = document.createElement('p');
+      nota.className = 'pari';
+      nota.textContent = 'Chi sta allo stesso posto è pari anche negli scontri diretti: ' +
+                         'serve uno spareggio.';
+      tab.appendChild(nota);
+    }
+
+    /* --- chi ha vinto --- */
+    var vinta = document.getElementById('girVinta');
+    if(girFinito()){
+      var primo = cl[0];
+      vinta.hidden = false;
+      vinta.innerHTML = '';
+      var occhiello = document.createElement('small');
+      var chiNome = document.createElement('b');
+      if(primo.pari){
+        occhiello.textContent = 'Primo posto a pari merito';
+        chiNome.textContent = cl.filter(function(r){ return r.posto === 1; })
+                                .map(function(r){ return girNomeDi(r.i); }).join(' e ');
+      }else{
+        occhiello.textContent = 'Ha vinto il girone';
+        chiNome.textContent = girNomeDi(primo.i);
+      }
+      vinta.appendChild(occhiello); vinta.appendChild(chiNome);
+    }else{
+      vinta.hidden = true;
+    }
+  }
+
+  function schedaGir(k, m){
+    var box = document.createElement('div');
+    box.className = 'incontro';
+    var capo = document.createElement('div');
+    capo.className = 'capo';
+    var n = document.createElement('span');
+    n.className = 'numP'; n.textContent = String(k + 1);
+    /* il turno sta gia' scritto sopra il gruppo: qui basta il numero */
+    capo.appendChild(n);
+    box.appendChild(capo);
+
+    ['a', 'b'].forEach(function(lato, idx){
+      if(idx === 1){
+        var vs = document.createElement('p');
+        vs.className = 'contro'; vs.textContent = 'contro';
+        box.appendChild(vs);
+      }
+      var chi = m[lato];
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'sfidante';
+      var pos = document.createElement('span');
+      pos.className = 'pos'; pos.textContent = String(chi + 1);
+      var nome = document.createElement('span');
+      nome.className = 'gg'; nome.textContent = girNomeDi(chi);
+      var v = document.createElement('span');
+      v.className = 'vv'; v.textContent = 'vince';
+      b.appendChild(pos); b.appendChild(nome); b.appendChild(v);
+      b.addEventListener('click', function(){ girSegna(k, lato); });
+      box.appendChild(b);
+    });
+    return box;
+  }
+
+  /* -------------------------------------------------- i tasti ---------- */
+  document.getElementById('girInizia').addEventListener('click', iniziaGirone);
+
+  document.getElementById('girMeno').addEventListener('click', function(){
+    girQuantiGiocatori(girNomi.length - 1);
+  });
+  document.getElementById('girPiu').addEventListener('click', function(){
+    girQuantiGiocatori(girNomi.length + 1);
+  });
+  document.getElementById('girNomiDaCapo').addEventListener('click', function(){
+    girNomi = girNomi.map(function(){ return ''; });
+    salvaGirNomi(); disegnaGirElenco();
+  });
+  document.getElementById('girChiudi').addEventListener('click', function(){
+    var b = this;
+    if(b.dataset.sicuro !== '1'){
+      b.dataset.sicuro = '1';
+      b.textContent = 'Sicuro? Il girone si cancella';
+      setTimeout(function(){ b.dataset.sicuro = ''; b.textContent = 'Chiudi il girone'; }, 4000);
+      return;
+    }
+    girone = null; salvaGirone();
+    b.dataset.sicuro = ''; b.textContent = 'Chiudi il girone';
+    sostituisci('gelenco');
+  });
+
+  /* -------------------------------------------- la scelta del torneo --- */
+  function disegnaScelta(){
+    var tasto = document.getElementById('scegliGirone');
+    var aperto = gironeAperto();
+    tasto.disabled = !aperto;
+    tasto.classList.toggle('spento', !aperto);
+    document.getElementById('etiGirone').textContent = !aperto ? 'In arrivo'
+      : (girone ? 'Girone in corso · riprendi' : 'In prova · da 3 a 10 giocatori');
+    document.querySelector('#scegliTabellone .eti').textContent =
+      gara ? 'Gara in corso · riprendi' : '16 giocatori · 31 partite';
+  }
+  document.getElementById('scegliTabellone').addEventListener('click', function(){
+    if(gara) vaiA('gara'); else vaiA('elenco');
+  });
+  document.getElementById('scegliGirone').addEventListener('click', function(){
+    if(girone) vaiA('ggara'); else vaiA('gelenco');
+  });
+
   /* ------------------------------------------------- installa in tasca -
      Android avvisa il browser con beforeinstallprompt: allora il tasto
      compare e apre la finestra vera. iPhone non lo fa, lo si aggiunge a
@@ -2060,11 +2623,18 @@
   chiediArchivioStabile();
   salva();          /* travasa subito la lista vecchia sulla chiave nuova */
   document.getElementById('versione').textContent = 'v' + VERSIONE;
-  sostituisci('elenco');
+  sostituisci('scelta');
+  var vuoleIlGirone = /^#girone\b/.test(location.hash || '');
+  if(vuoleIlGirone){
+    apriIlGirone();
+    try{ history.replaceState({ vista:'scelta' }, '', location.pathname + location.search); }catch(e){}
+  }
   var arrivata = garaNellIndirizzo();
   if(arrivata) proponi(arrivata, 'da un altro apparecchio');
-  else if(gara) vaiA('gara');   /* una gara aperta si riprende da dov'era,
-                                   e il tasto indietro riporta all'elenco */
+  else if(vuoleIlGirone) vaiA(girone ? 'ggara' : 'gelenco');
+  else if(gara) vaiA('gara');       /* si riprende da dov'era, e il tasto
+                                       indietro riporta alla scelta */
+  else if(girone) vaiA('ggara');
 })();
 </script>
 </body>
