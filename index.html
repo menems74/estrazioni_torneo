@@ -772,11 +772,11 @@
     <p class="scarto" id="girScarto" role="status" hidden>Tocco troppo veloce: non l'ho contato, rifallo.</p>
     <div id="girDaFare"></div>
 
-    <h2 class="titoloGara" id="girTitoloFatte">Fatte</h2>
-    <div class="fatte" id="girStoria"></div>
-
     <h2 class="titoloGara">Classifica</h2>
     <div class="tabella" id="girClassifica"></div>
+
+    <h2 class="titoloGara" id="girTitoloFatte">Fatte</h2>
+    <div class="fatte" id="girStoria"></div>
 
     <div class="dopo">
       <button type="button" class="chiudi" id="girChiudi">Chiudi il girone</button>
@@ -842,7 +842,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.8';        // si legge in fondo alla pagina
+  var VERSIONE = '1.9';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
@@ -1711,7 +1711,7 @@
     b.dataset.sicuro = ''; b.textContent = 'Chiudi la gara';
     modoAvvia = 'estrai';
     document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
-    sostituisci('elenco');
+    sostituisci('scelta');
   });
 
 
@@ -2508,7 +2508,7 @@
     }
     girone = null; salvaGirone();
     b.dataset.sicuro = ''; b.textContent = 'Chiudi il girone';
-    sostituisci('gelenco');
+    sostituisci('scelta');
   });
 
   /* -------------------------------------------- la scelta del torneo --- */

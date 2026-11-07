@@ -164,7 +164,7 @@ def annulla_e_riprende(ctx, sito, dire):
 
     a.pg.click("#girChiudi"); a.pg.wait_for_timeout(200)
     a.pg.click("#girChiudi"); a.pg.wait_for_timeout(350)
-    assert a.vista() == "gelenco"
+    assert a.vista() == "scelta", "chiudendo si torna alla scelta del torneo: %s" % a.vista()
     assert a.pg.evaluate("localStorage.getItem('estrazione-torneo:girone')") is None
     dire("annulla, ricaricamento, doppio tocco e chiusura: come nel tabellone")
     a.chiudi()

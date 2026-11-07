@@ -93,7 +93,7 @@ def riprende_e_si_chiude(ctx, sito, dire):
     assert a.conta() == prima, (a.conta(), prima)
     a.pg.click("#chiudiGara"); a.pg.wait_for_timeout(200)
     a.pg.click("#chiudiGara"); a.pg.wait_for_timeout(350)
-    assert a.vista() == "elenco"
+    assert a.vista() == "scelta", "chiudendo si torna alla scelta del torneo: %s" % a.vista()
     a.pg.reload(); a.pg.wait_for_timeout(700)
     # senza gara aperta si riparte dalla scelta del torneo
     assert a.vista() == "scelta", "la gara chiusa non doveva tornare: %s" % a.vista()
