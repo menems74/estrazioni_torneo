@@ -1563,7 +1563,14 @@
     document.body.classList.toggle('nelTabellone', t);
     vistaOra = nome;
 
-    if(e){ disegnaElenco(); disegnaRipresa(); viaICollegamenti(); }
+    if(e){
+      /* tornando all'elenco con il tasto indietro il pulsantone deve
+         tornare quello che e': prima restava quello delle coppie, con
+         la scritta giusta ma il gesto sbagliato */
+      modoAvvia = 'estrai';
+      document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
+      disegnaElenco(); disegnaRipresa(); viaICollegamenti();
+    }
     if(c) piediCoppie();
     if(g) disegnaGara();
     if(t) disegnaTabellone();

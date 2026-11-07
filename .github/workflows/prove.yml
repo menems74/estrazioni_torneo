@@ -1,0 +1,31 @@
+# Fa girare le prove a ogni modifica spedita su GitHub.
+# Aprono l'app in un Chromium vero e la usano come una persona: se il
+# tabellone sbaglia una casella, qui si vede prima che lo veda un bar.
+name: Prove
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  prove:
+    name: Tornei finti in un browser vero
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installa Playwright
+        run: pip install playwright
+
+      - name: Installa Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Esegui le prove
+        run: python prove/esegui.py
