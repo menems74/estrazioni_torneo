@@ -111,6 +111,14 @@
     font:600 14px var(--font-sans);color:var(--muted)}
   .tema button[aria-pressed="true"]{background:var(--blocco);color:var(--su-blocco)}
   .conta{margin-left:auto;font:600 14px var(--font-sans);color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+  /* il tabellone si apre da qui, e si vede solo mentre la gara e' aperta */
+  .tastoTop{display:none;margin-left:auto;align-items:center;gap:9px;background:var(--blocco);
+    color:var(--su-blocco);border:0;border-radius:999px;padding:0 18px;min-height:46px;
+    font:600 15px var(--font-sans)}
+  .tastoTop svg{width:20px;height:20px;fill:none;stroke:var(--evidenza);stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round}
+  body.inGara .tastoTop{display:inline-flex}
+  body.nelTabellone .tastoTop{display:none}
   .conta b{color:var(--ink)}
   .pallino{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green-live);margin-right:6px}
   .pallino.bye{background:var(--muted-dark)}
@@ -237,9 +245,13 @@
     color:var(--evidenza);margin-bottom:8px}
   .vinta b{font:800 clamp(34px,9vw,64px)/1 var(--font-display);letter-spacing:-.03em}
 
-  .dopo{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+  .dopo{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
   .dopo button{background:transparent;border:2px solid var(--ink);border-radius:999px;padding:0 18px;
     min-height:46px;font:600 14px var(--font-sans)}
+  /* chiudere la gara cancella tutto: si vede bene, ma chiede conferma */
+  .dopo button.chiudi{width:100%;max-width:440px;margin:0 auto;border-color:var(--rosso);
+    color:var(--rosso);min-height:58px;font:700 17px var(--font-sans)}
+  .dopo button.chiudi[data-sicuro="1"]{background:var(--rosso);color:var(--paper);border-color:var(--rosso)}
   body.inGara .barra{display:none}
   body.inGara .conta{display:none}   /* presenti e bye: conta prima del via, non dopo */
   body.inGara .pagina{padding-bottom:40px}
@@ -526,6 +538,13 @@
       <button type="button" id="temaChiaro" aria-pressed="true">Chiaro</button>
       <button type="button" id="temaScuro" aria-pressed="false">Scuro</button>
     </div>
+    <button type="button" class="tastoTop" id="vediTabellone">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5h7v5H3zM3 14h7v5H3zM14 9.5h7v5h-7z"/>
+        <path d="M10 7.5h2v9h2M10 16.5h2"/>
+      </svg>
+      Tabellone
+    </button>
     <p class="conta" id="conta"></p>
   </div>
 
@@ -578,8 +597,7 @@
     <div class="classifica" id="garaClassifica"></div>
 
     <div class="dopo">
-      <button type="button" id="vediTabellone">Guarda il tabellone</button>
-      <button type="button" id="chiudiGara">Chiudi la gara</button>
+      <button type="button" class="chiudi" id="chiudiGara">Chiudi la gara</button>
     </div>
   </section>
 
@@ -1411,6 +1429,7 @@
     document.getElementById('vistaElenco').hidden = true;
     document.getElementById('vistaCoppie').hidden = true;
     document.getElementById('vistaTabellone').hidden = true;
+    document.body.classList.remove('nelTabellone');
     document.getElementById('vistaGara').hidden = false;
     document.body.classList.remove('conCoppie');
     document.body.classList.add('inGara');
@@ -1431,6 +1450,7 @@
     document.getElementById('vistaGara').hidden = true;
     document.getElementById('vistaElenco').hidden = false;
     document.body.classList.remove('inGara');
+    document.body.classList.remove('nelTabellone');
     b.dataset.sicuro = ''; b.textContent = 'Chiudi la gara';
     modoAvvia = 'estrai';
     document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
@@ -1514,6 +1534,7 @@
   function mostraTabellone(){
     document.getElementById('vistaGara').hidden = true;
     document.getElementById('vistaTabellone').hidden = false;
+    document.body.classList.add('nelTabellone');
     disegnaTabellone();
     window.scrollTo(0, 0);
   }
@@ -1522,6 +1543,7 @@
   document.getElementById('tornaGara').addEventListener('click', function(){
     document.getElementById('vistaTabellone').hidden = true;
     document.getElementById('vistaGara').hidden = false;
+    document.body.classList.remove('nelTabellone');
     disegnaGara();
     window.scrollTo(0, 0);
   });
