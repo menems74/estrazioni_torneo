@@ -8,15 +8,15 @@ registrazione e niente connessione obbligatoria.
 
 ## Come funziona
 
-1. Si sceglie quanti giocatori sono in tabellone (parte da 16, da 2 a 64).
-2. Per ognuno si scrive il nome e si segna **Presente** o **Bye**.
-3. Si preme **Avvia estrazione**: parte il conto alla rovescia sul
+1. Il tabellone è sempre da sedici caselle: per ognuna si scrive il nome e
+   si segna **Presente** o **Bye**. Chi non c'è resta un bye.
+2. Si preme **Avvia estrazione**: parte il conto alla rovescia sul
    bersaglio — una freccetta si pianta a ogni secondo — e al terzo
    compaiono le partite.
-4. L'organizzatore chiama le coppie una alla volta e tocca la partita
+3. L'organizzatore chiama le coppie una alla volta e tocca la partita
    quando l'ha chiamata, così non perde il segno.
-5. Con sedici caselle piene compare **Inizia la gara**, che porta i
-   giocatori nel tabellone a doppio K.O.
+4. Poi **Inizia la gara**, che porta i giocatori nel tabellone a doppio
+   K.O.
 
 ## La gara
 
@@ -36,6 +36,12 @@ I **bye** sono giocatori a tutti gli effetti, ma perdono d'ufficio: la
 loro partita non scende mai al bersaglio, l'app la chiude da sola e lo
 scrive. Se due bye si incontrano passa quello sopra, che perderà
 d'ufficio anche la partita seguente.
+
+Da **Guarda il tabellone** si vede tutto lo schema, con il filetto che
+distingue i due gironi e in nero chi ha vinto; si scorre di lato e si
+allarga con due dita. **Stampa il foglio** manda lo stesso tabellone,
+bianco e nero, su un A4 orizzontale: buono da appendere al muro, così i
+giocatori guardano da soli invece di chiedere.
 
 Un risultato sbagliato si annulla. Se ha già prodotto altre partite l'app
 lo dice prima — «annullando la 1 si cancella anche la 9 e la 13» — e

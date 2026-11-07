@@ -51,7 +51,6 @@
     --filo:#ddd9d1;             /* i filetti sottili */
     --ombra-tasto:#9c1a0f;      /* lo spessore sotto il pulsantone */
     --tasto-spento:#e3e0d8;
-    --disco:rgba(255,255,255,.3);   /* i tondi - e + dentro la pill scura */
     --radius:28px; --gap:14px;
     --font-display:"Bricolage Grotesque","Inter",sans-serif;
     --font-sans:"Inter","Segoe UI",system-ui,sans-serif;
@@ -59,6 +58,17 @@
   /* Il vestito scuro. Chi apre la pagina lo riceve se il telefono è in
      scuro; i due tasti in alto hanno comunque l'ultima parola, e la
      scelta resta scritta nel browser. */
+  /* i due gironi, perche' si riconoscano a colpo d'occhio */
+  :root{
+    --tinta-v:#eef7f0; --bordo-v:#2fa84f; --testo-v:#1a6e35;
+    --tinta-p:#fdf2ee; --bordo-p:#e02718; --testo-p:#a8301d;
+    --incavo:rgba(0,0,0,.055);
+  }
+  :root[data-tema="scuro"]{
+    --tinta-v:#13241d; --bordo-v:#34d399; --testo-v:#34d399;
+    --tinta-p:#241711; --bordo-p:#f97316; --testo-p:#f97316;
+    --incavo:rgba(255,255,255,.07);
+  }
   :root[data-tema="scuro"]{
     color-scheme:dark;
     --bg:#0f172a; --ink:#ffffff; --paper:#192134; --muted:#93a3bd; --muted-dark:#5b6b86;
@@ -76,7 +86,6 @@
     --filo:#2e3950;
     --ombra-tasto:#9a3a08;
     --tasto-spento:#26324a;
-    --disco:rgba(255,255,255,.14);
   }
   *{box-sizing:border-box;margin:0}
   /* "hidden" deve vincere sempre: una classe con display lo scavalcherebbe */
@@ -116,14 +125,6 @@
   /* --- i sedici --- */
   .strumenti{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0 0 var(--gap)}
   .strumenti .riga{display:flex;gap:10px;flex-wrap:wrap}
-  .quanti{display:flex;align-items:center;gap:6px;background:var(--blocco);color:var(--su-blocco);
-    border-radius:999px;padding:4px 6px 4px 18px}
-  .quanti .etichetta{font:600 14px var(--font-sans);margin-right:4px}
-  .quanti button{width:48px;min-height:48px;border:0;border-radius:50%;background:var(--disco);
-    color:var(--su-blocco);font:800 24px/1 var(--font-display)}
-  .quanti button:active{background:var(--evidenza);color:var(--blocco)}
-  .quanti output{min-width:56px;text-align:center;font:800 26px var(--font-display);
-    color:var(--evidenza);font-variant-numeric:tabular-nums}
   /* solo i due tasti della seconda riga: se no questa regola rubava anche
      i tondi - e +, che dentro la pill nera restavano senza contorno */
   .riga button{background:transparent;border:2px solid var(--ink);border-radius:999px;
@@ -168,7 +169,19 @@
   .fila{display:grid;grid-template-columns:1fr;gap:10px}
   @media (min-width:760px){.fila{grid-template-columns:1fr 1fr}}
   .incontro{background:var(--paper);border-radius:var(--radius);padding:12px 14px 14px;
-    display:flex;flex-direction:column}
+    display:flex;flex-direction:column;border-left:8px solid transparent}
+  .incontro.vincenti{background:var(--tinta-v);border-left-color:var(--bordo-v)}
+  .incontro.vincenti .girone{color:var(--testo-v)}
+  .incontro.perdenti{background:var(--tinta-p);border-left-color:var(--bordo-p)}
+  .incontro.perdenti .girone{color:var(--testo-p)}
+  .incontro.vincenti .sfidante,.incontro.perdenti .sfidante{background:var(--incavo)}
+  .incontro.finale{background:var(--blocco);color:var(--su-blocco);border-left-color:var(--evidenza)}
+  .incontro.finale .girone{color:var(--evidenza)}
+  .incontro.finale .sfidante{background:rgba(255,255,255,.1)}
+  .incontro.finale .sfidante .pos{background:var(--evidenza);color:var(--blocco)}
+  .incontro.finale .sfidante .vv{border-color:rgba(255,255,255,.4);color:var(--su-blocco)}
+  .incontro.finale .sfidante .gg small,.incontro.finale .contro{color:rgba(255,255,255,.6)}
+  .incontro.finale .numP{background:var(--evidenza);color:var(--blocco)}
   .incontro .capo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
   .numP{background:var(--blocco);color:var(--evidenza);border-radius:12px;padding:4px 11px;
     font:800 17px var(--font-display);font-variant-numeric:tabular-nums}
@@ -230,6 +243,80 @@
   body.inGara .barra{display:none}
   body.inGara .conta{display:none}   /* presenti e bye: conta prima del via, non dopo */
   body.inGara .pagina{padding-bottom:40px}
+
+  /* --- il tabellone intero: undici colonne, sedici righe ---------------
+     Ogni casella occupa tante righe quanto il pezzo di tabellone che
+     raccoglie, come sul foglio: le partite del primo turno due righe, le
+     finali tutte e sedici. A sinistra i perdenti, al centro il primo
+     turno, a destra i vincenti. --------------------------------------- */
+  .capoTab{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 14px}
+  .capoTab button{background:transparent;border:2px solid var(--ink);border-radius:999px;
+    padding:0 18px;min-height:46px;font:600 14px var(--font-sans)}
+  .capoTab button.primo{background:var(--azione);color:var(--su-azione);border-color:var(--azione)}
+  .scorri{overflow:auto;padding:2px 0 14px}
+  .tabellone{
+    --col:154px; --rig:38px;
+    display:grid; width:max-content;
+    grid-template-columns:repeat(11, var(--col));
+    grid-template-rows:repeat(16, var(--rig));
+    column-gap:10px; row-gap:0;
+  }
+  .casella{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}
+  .casella .cn{font:700 10px/1.3 var(--font-sans);letter-spacing:.06em;color:var(--muted);
+    padding-left:11px}
+  .casella .slot{display:flex;align-items:center;justify-content:space-between;gap:6px;
+    background:var(--paper);border-radius:7px;padding:4px 8px;min-height:28px;min-width:0;
+    border-left:5px solid var(--filo)}
+  .casella .slot .sn{font:600 13px/1.2 var(--font-display);letter-spacing:-.01em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .casella .slot .fonte{flex:none;font:600 9px var(--font-sans);letter-spacing:.06em;color:var(--muted-dark)}
+  .casella .slot.vuoto .sn{color:var(--muted-dark)}
+  .casella .slot.vinto{background:var(--blocco);color:var(--su-blocco)}
+  .casella .slot.vinto .sn{font-weight:800}
+  .casella .slot.vinto .fonte{color:var(--evidenza)}
+  /* il filetto del girone viene dopo, cosi' resta colorato anche sui vinti */
+  .casella.vincenti .slot{border-left-color:var(--bordo-v)}
+  .casella.perdenti .slot{border-left-color:var(--bordo-p)}
+  .casella.finale .slot{border-left-color:var(--evidenza)}
+  .casella.spenta{opacity:.45}
+  .legenda{margin-top:4px}
+  .intestazione-stampa{display:none}
+
+  @media print{
+    /* il foglio per il muro: bianco, nero e una sola pagina */
+    :root, :root[data-tema="scuro"]{
+      --bg:#fff; --ink:#000; --paper:#fff; --muted:#555; --muted-dark:#777;
+      --blocco:#000; --su-blocco:#fff; --evidenza:#000;
+      --bordo-v:#000; --bordo-p:#9a9a9a; --filo:#c8c8c8;
+    }
+    @page{size:A4 landscape;margin:8mm}
+    /* min-height:100dvh sullo schermo serve, su carta fa nascere una
+       seconda pagina vuota: qui si azzera */
+    body{background:#fff;color:#000;min-height:0}
+    .top,.barra,.piede,.capoTab,.legenda{display:none!important}
+    .pagina, body.inGara .pagina, body.conCoppie .pagina{padding:0;max-width:none}
+    .scorri{overflow:visible;padding:0}
+    .intestazione-stampa{display:block;font:700 12pt var(--font-display);margin:0 0 3mm}
+    .intestazione-stampa small{font:400 8pt var(--font-sans);color:#555;margin-left:4mm}
+    .tabellone{--col:23.2mm; --rig:11mm; column-gap:1.2mm}
+    .casella{gap:0.6mm}
+    .casella .cn{font-size:6.4pt;line-height:1.2;padding-left:1.8mm}
+    .casella .slot{padding:0.8mm 1.2mm;min-height:7mm;border-radius:1.2mm;
+      border:0.2mm solid #d8d8d8;border-left:1.2mm solid #c8c8c8}
+    .casella .slot .sn{font-size:9pt;color:#777}
+    .casella .slot .fonte{font-size:5.2pt}
+    /* come sul foglio federale: la sigla si stampa solo dove manca il nome,
+       cosi' i nomi lunghi non vengono tagliati */
+    .casella .slot:not(.vuoto) .fonte{display:none}
+    /* su carta niente fondi pieni: vince chi e' in nero e in neretto */
+    .casella .slot.vinto{background:#fff;color:#000;border-color:#000}
+    .casella .slot.vinto .sn{color:#000}
+    .casella .slot.vinto .fonte{color:#000}
+    .casella.vincenti .slot{border-left-color:#000}
+    .casella.perdenti .slot{border-left-color:#9a9a9a}
+    .casella.finale .slot{border-left-color:#000}
+    .casella.spenta{opacity:1}
+  }
 
   /* --- il piede: installazione e firma --- */
   .piede{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
@@ -450,12 +537,6 @@
     </div>
 
     <div class="strumenti">
-      <div class="quanti">
-        <span class="etichetta" id="etichettaQuanti">Giocatori</span>
-        <button type="button" id="meno" aria-label="Un giocatore in meno">&#8722;</button>
-        <output id="numeroGiocatori" aria-labelledby="etichettaQuanti">16</output>
-        <button type="button" id="piu" aria-label="Un giocatore in piu">+</button>
-      </div>
       <div class="riga">
         <button type="button" id="tuttiPresenti">Tutti presenti</button>
         <button type="button" id="nomiDaCapo">Rimetti i nomi</button>
@@ -497,8 +578,26 @@
     <div class="classifica" id="garaClassifica"></div>
 
     <div class="dopo">
+      <button type="button" id="vediTabellone">Guarda il tabellone</button>
       <button type="button" id="chiudiGara">Chiudi la gara</button>
     </div>
+  </section>
+
+  <!-- ===== schermata 4: il tabellone intero, da guardare e da stampare ===== -->
+  <section id="vistaTabellone" hidden>
+    <div class="capoTab">
+      <button type="button" id="tornaGara">&#8592; Torna alla gara</button>
+      <button type="button" class="primo" id="stampaTab">Stampa il foglio</button>
+    </div>
+    <p class="intestazione-stampa" id="intestazioneStampa"></p>
+    <div class="scorri"><div class="tabellone" id="tabellone"></div></div>
+    <p class="nota legenda">
+      Si scorre di lato e si allarga con due dita. Il filetto a sinistra di ogni
+      casella distingue i due gironi; in nero chi ha vinto la partita. Le sigle
+      a destra dicono da dove arriva ognuno: <b>V9</b> è il vincente della 9,
+      <b>P16</b> il perdente della 16, un numero da solo è la posizione del
+      sorteggio. Il foglio stampato entra in un A4 orizzontale.
+    </p>
   </section>
 
   <footer class="piede">
@@ -542,8 +641,7 @@
 (function(){
   'use strict';
 
-  var PREDEFINITI = 16;        // il numero che si trova gia' scritto
-  var MINIMO = 2, MASSIMO = 64;
+  var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
   var CHIAVE = 'estrazione-torneo:giocatori';
   var CHIAVE_VECCHIA = 'rems:torneo:giocatori';   // da quando stava nel portale
 
@@ -560,20 +658,17 @@
   function carica(){
     try{
       var g = JSON.parse(localStorage.getItem(CHIAVE) || localStorage.getItem(CHIAVE_VECCHIA));
-      if(Array.isArray(g) && g.length >= MINIMO && g.length <= MASSIMO){
-        return g.map(function(x){ return { nome: String(x.nome || ''), bye: !!x.bye }; });
+      if(Array.isArray(g) && g.length){
+        var lista = g.slice(0, QUANTI).map(function(x){
+          return { nome: String(x.nome || ''), bye: !!x.bye };
+        });
+        /* liste piu' corte, salvate quando il numero si poteva scegliere:
+           si allungano a sedici con caselle vuote, senza perdere i nomi */
+        while(lista.length < QUANTI) lista.push({ nome: '', bye: false });
+        return lista;
       }
     }catch(e){ /* niente memoria: si riparte puliti */ }
-    return vuoti(PREDEFINITI);
-  }
-
-  /* Cambiare il numero non cancella i nomi gia' scritti: si aggiungono
-     caselle vuote in fondo, o si tolgono le ultime. */
-  function quantiGiocatori(n){
-    n = Math.max(MINIMO, Math.min(MASSIMO, n));
-    while(giocatori.length < n) giocatori.push({ nome: '', bye: false });
-    if(giocatori.length > n) giocatori.length = n;
-    salva(); disegnaElenco();
+    return vuoti(QUANTI);
   }
   function salva(){
     try{ localStorage.setItem(CHIAVE, JSON.stringify(giocatori)); }catch(e){}
@@ -698,14 +793,11 @@
     document.getElementById('conta').innerHTML =
       '<span><span class="pallino"></span><b>' + p + '</b> presenti</span>' +
       '<span><span class="pallino bye"></span><b>' + b + '</b> bye</span>';
-    document.getElementById('numeroGiocatori').textContent = String(giocatori.length);
-
     // non si blocca niente: si dice solo cosa succedera'
     var s = scontriBye(), avvisi = [];
     if(s) avvisi.push(s === 1
       ? 'I bye sono piu\' dei presenti: una partita sara\' bye contro bye.'
       : 'I bye sono piu\' dei presenti: ' + s + ' partite saranno bye contro bye.');
-    if(giocatori.length % 2) avvisi.push('Giocatori dispari: uno riposa.');
     document.getElementById('avviso').textContent = avvisi.join(' ');
   }
 
@@ -919,20 +1011,13 @@
     contoAllaRovescia(function(){ mostraCoppie(esito); });
   });
 
-  document.getElementById('meno').addEventListener('click', function(){
-    quantiGiocatori(giocatori.length - 1);
-  });
-  document.getElementById('piu').addEventListener('click', function(){
-    quantiGiocatori(giocatori.length + 1);
-  });
-
   document.getElementById('tuttiPresenti').addEventListener('click', function(){
     giocatori.forEach(function(g){ g.bye = false; });
     salva(); disegnaElenco();
   });
 
   document.getElementById('nomiDaCapo').addEventListener('click', function(){
-    giocatori = vuoti(giocatori.length); salva(); disegnaElenco();
+    giocatori = vuoti(QUANTI); salva(); disegnaElenco();
   });
 
 
@@ -1150,7 +1235,7 @@
     pronte.forEach(function(P){
       var c = dentro[P.n];
       var box = document.createElement('div');
-      box.className = 'incontro';
+      box.className = 'incontro ' + famiglia(P.g);
 
       var capo = document.createElement('div');
       capo.className = 'capo';
@@ -1271,6 +1356,15 @@
     }
   }
 
+  /* Vincenti, perdenti o finale: serve solo a dare il colore giusto */
+  function famiglia(girone){
+    var g = girone.toLowerCase();
+    if(g.indexOf('vincenti') >= 0) return 'vincenti';
+    if(g.indexOf('perdenti') >= 0) return 'perdenti';
+    if(g === 'finale' || g === 'bella') return 'finale';
+    return 'primo';
+  }
+
   function descrivi(da){
     if(da[0] === 'S') return 'il sorteggio';
     return (da[0] === 'V' ? 'il vincente' : 'il perdente') + ' della ' + da[1];
@@ -1316,6 +1410,7 @@
   function mostraGara(){
     document.getElementById('vistaElenco').hidden = true;
     document.getElementById('vistaCoppie').hidden = true;
+    document.getElementById('vistaTabellone').hidden = true;
     document.getElementById('vistaGara').hidden = false;
     document.body.classList.remove('conCoppie');
     document.body.classList.add('inGara');
@@ -1332,6 +1427,7 @@
       return;
     }
     gara = null; salvaGara();
+    document.getElementById('vistaTabellone').hidden = true;
     document.getElementById('vistaGara').hidden = true;
     document.getElementById('vistaElenco').hidden = false;
     document.body.classList.remove('inGara');
@@ -1340,6 +1436,97 @@
     document.getElementById('etichettaAvvia').textContent = 'Avvia estrazione';
     disegnaElenco();
     window.scrollTo(0, 0);
+  });
+
+
+  /* ------------------------------------------------- il tabellone intero -
+     Dove sta ogni casella: colonna da 1 a 11, poi riga di partenza e
+     quante righe occupa. I numeri vengono dal foglio: a sinistra il
+     girone perdenti che si approfondisce, al centro il primo turno, a
+     destra i vincenti. ------------------------------------------------- */
+  var COLONNA = {
+    29:1, 27:2, 25:3, 26:3, 21:4, 22:4,
+    17:5, 18:5, 19:5, 20:5,
+    9:6, 10:6, 11:6, 12:6,
+    1:7, 2:7, 3:7, 4:7, 5:7, 6:7, 7:7, 8:7,
+    13:8, 14:8, 15:8, 16:8,
+    23:9, 24:9, 28:10, 30:11, 31:11
+  };
+  var RIGA = {
+    1:[1,2], 2:[3,2], 3:[5,2], 4:[7,2], 5:[9,2], 6:[11,2], 7:[13,2], 8:[15,2],
+    9:[1,4], 10:[5,4], 11:[9,4], 12:[13,4],
+    13:[1,4], 14:[5,4], 15:[9,4], 16:[13,4],
+    17:[1,4], 18:[5,4], 19:[9,4], 20:[13,4],
+    21:[1,8], 22:[9,8], 23:[1,8], 24:[9,8], 25:[1,8], 26:[9,8],
+    27:[1,16], 28:[1,16], 29:[1,16],
+    30:[1,8], 31:[9,8]
+  };
+
+  function sigla(da){
+    if(da[0] === 'S') return String(da[1] + 1);
+    return da[0] + da[1];
+  }
+
+  function disegnaTabellone(){
+    var dentro = ricostruisci();
+    salvaGara();
+    var t = document.getElementById('tabellone');
+    t.innerHTML = '';
+
+    PARTITE.forEach(function(P){
+      var c = dentro[P.n], e = gara.esiti[P.n];
+      var vivo = !(P.n === 31 && !bellaServe());
+
+      var box = document.createElement('div');
+      box.className = 'casella ' + famiglia(P.g) + (vivo ? '' : ' spenta');
+      box.style.gridColumn = String(COLONNA[P.n]);
+      box.style.gridRow = RIGA[P.n][0] + ' / span ' + RIGA[P.n][1];
+
+      var cn = document.createElement('span');
+      cn.className = 'cn';
+      cn.textContent = P.n + (P.n === 31 ? ' · bella' : '');
+      box.appendChild(cn);
+
+      ['a', 'b'].forEach(function(lato){
+        var chi = vivo ? c[lato] : null;
+        var slot = document.createElement('div');
+        slot.className = 'slot' + (chi === null ? ' vuoto' : '') +
+                         (e && e.v === lato && vivo ? ' vinto' : '');
+        var sn = document.createElement('span');
+        sn.className = 'sn';
+        sn.textContent = chi === null ? '—' : nomeEBye(chi);
+        var fo = document.createElement('span');
+        fo.className = 'fonte';
+        fo.textContent = sigla(P[lato]);
+        slot.appendChild(sn); slot.appendChild(fo);
+        box.appendChild(slot);
+      });
+
+      t.appendChild(box);
+    });
+
+    var quando = new Date();
+    document.getElementById('intestazioneStampa').innerHTML =
+      'Estrazione Torneo — tabellone da 16, doppio K.O.' +
+      '<small>' + quando.toLocaleDateString('it-IT') + '</small>';
+  }
+
+  function mostraTabellone(){
+    document.getElementById('vistaGara').hidden = true;
+    document.getElementById('vistaTabellone').hidden = false;
+    disegnaTabellone();
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('vediTabellone').addEventListener('click', mostraTabellone);
+  document.getElementById('tornaGara').addEventListener('click', function(){
+    document.getElementById('vistaTabellone').hidden = true;
+    document.getElementById('vistaGara').hidden = false;
+    disegnaGara();
+    window.scrollTo(0, 0);
+  });
+  document.getElementById('stampaTab').addEventListener('click', function(){
+    window.print();
   });
 
   /* ------------------------------------------------- installa in tasca -
