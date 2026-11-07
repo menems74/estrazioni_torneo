@@ -91,8 +91,10 @@ gara di domani non viene letta con le regole di ieri.
 Tutti contro tutti, una partita per coppia, da tre a sedici giocatori.
 Vittoria 2 punti, sconfitta 0, nessun pareggio: alle freccette una
 partita finisce sempre con un vincitore. A pari punti conta lo scontro
-diretto; se anche quello è pari, l'app lo scrive invece di inventarsi un
-vincitore.
+diretto, e in classifica sta scritto in piccolo sotto il nome di chi è
+stato messo in fila così. Se anche gli scontri diretti sono pari, i
+giocatori restano allo stesso posto e l'app scrive che serve uno
+spareggio, invece di inventarsi un vincitore.
 
 L'ordine delle partite non è casuale: si usa il metodo del cerchio,
 quello dei calendari dei campionati. Dentro ogni turno nessuno gioca due

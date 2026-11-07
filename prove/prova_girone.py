@@ -33,7 +33,8 @@ def _classifica(a):
     return a.pg.evaluate(
         "() => [...document.querySelectorAll('#girClassifica .voce')].map(e => ({"
         "posto:e.querySelector('.pst').textContent,"
-        "chi:e.querySelector('.chi').textContent,"
+        "chi:e.querySelector('.chi>span').textContent,"
+        "perche:e.querySelector('.chi small') ? e.querySelector('.chi small').textContent : '',"
         "g:+e.querySelectorAll('.num')[0].textContent,"
         "v:+e.querySelectorAll('.num')[1].textContent,"
         "pt:+e.querySelector('.pti').textContent}))")
@@ -132,6 +133,8 @@ def scontro_diretto(ctx, sito, dire):
     assert all(r["posto"] == "1°" for r in cl), "a pari merito stanno tutti primi: %s" % cl
     nota = a.pg.locator("#girClassifica .pari")
     assert nota.count() == 1 and "spareggio" in nota.inner_text()
+    assert all(r["perche"] == "" for r in cl), \
+        "qui nessuno e' stato separato dallo scontro diretto: %s" % cl
     assert "pari merito" in a.pg.locator("#girVinta").inner_text().lower()
     dire("tre vittorie in cerchio: pari merito dichiarato, niente vincitore inventato")
     a.chiudi()
@@ -188,5 +191,38 @@ def fino_a_sedici(ctx, sito, dire):
     dire("sedici giocatori: 120 partite in 15 turni da otto")
 
 
+def etichetta_scontro_diretto(ctx, sito, dire):
+    """Quattro giocatori a coppie di pari punti: a ogni coppia l'ordine lo
+    decide lo scontro diretto, e la classifica deve dirlo."""
+    a = _apri(ctx, sito, quanti=4)
+    chi = NOMI[:4]                       # Marco, Luca, Andrea, Giulia
+    vince = {
+        (chi[0], chi[1]): chi[0], (chi[0], chi[2]): chi[0], (chi[0], chi[3]): chi[3],
+        (chi[1], chi[2]): chi[1], (chi[1], chi[3]): chi[1], (chi[2], chi[3]): chi[2],
+    }
+    while True:
+        P = _partite(a)
+        if not P:
+            break
+        m = P[0]
+        uno, due = m["nomi"]
+        w = vince.get((uno, due)) or vince.get((due, uno))
+        lato = 0 if uno == w else 1
+        c = a.pg.locator("#girDaFare .incontro:has(.numP:text-is('%d')) .sfidante" % m["n"])
+        c.nth(lato).scroll_into_view_if_needed()
+        c.nth(lato).click()
+        a.pg.wait_for_timeout(340)
+
+    cl = _classifica(a)
+    assert [r["chi"] for r in cl] == [chi[0], chi[1], chi[2], chi[3]], cl
+    assert [r["pt"] for r in cl] == [4, 4, 2, 2], cl
+    assert [r["posto"] for r in cl] == ["1°", "2°", "3°", "4°"], cl
+    assert all(r["perche"].lower() == "scontro diretto" for r in cl), \
+        "tutti e quattro sono stati separati dallo scontro diretto: %s" % cl
+    assert a.pg.locator("#girClassifica .pari").count() == 0, "qui non c'e' nessun pari merito"
+    a.chiudi()
+    dire("a pari punti la classifica scrive che a decidere e' stato lo scontro diretto")
+
+
 PROVE = [dalla_scelta, calendario_pari, calendario_dispari, fino_a_sedici,
-         girone_intero, scontro_diretto, annulla_e_riprende]
+         girone_intero, scontro_diretto, etichetta_scontro_diretto, annulla_e_riprende]

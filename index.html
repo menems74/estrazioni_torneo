@@ -231,8 +231,12 @@
   .tabella .voce.primo{background:var(--blocco);color:var(--su-blocco)}
   .tabella .voce .pst{font:800 16px var(--font-display);color:var(--muted)}
   .tabella .voce.primo .pst{color:var(--evidenza)}
-  .tabella .voce .chi{font:700 17px var(--font-display);letter-spacing:-.01em;min-width:0;
+  .tabella .voce .chi{display:flex;flex-direction:column;justify-content:center;gap:1px;min-width:0}
+  .tabella .voce .chi > span{font:700 17px var(--font-display);letter-spacing:-.01em;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tabella .voce .chi small{font:600 10px var(--font-sans);letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .tabella .voce.primo .chi small{color:var(--evidenza)}
   .tabella .voce .num{font:600 15px var(--font-sans);text-align:center;background:none;
     width:auto;height:auto;border-radius:0;display:block;color:var(--muted)}
   .tabella .voce.primo .num{color:var(--su-blocco)}
@@ -842,7 +846,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.9';        // si legge in fondo alla pagina
+  var VERSIONE = '2.0';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
@@ -2229,8 +2233,15 @@
       var j = k;
       while(j + 1 < dati.length && dati[j + 1].pt === dati[k].pt) j++;
       var gruppo = dati.slice(k, j + 1);
-      if(gruppo.length > 1) gruppo = perScontroDiretto(gruppo, P);
-      else gruppo[0].mini = 0;
+      if(gruppo.length > 1){
+        gruppo = perScontroDiretto(gruppo, P);
+        /* se dentro il gruppo gli scontri diretti non sono tutti uguali,
+           sono loro ad aver messo in fila questi giocatori */
+        var tuttiPari = gruppo.every(function(r){ return r.mini === gruppo[0].mini; });
+        if(!tuttiPari) gruppo.forEach(function(r){ r.perScontri = true; });
+      }else{
+        gruppo[0].mini = 0;
+      }
       fuori = fuori.concat(gruppo);
       k = j + 1;
     }
@@ -2245,6 +2256,9 @@
         posto = idx + 1; r.posto = posto; r.pari = false;
       }
     });
+    /* la scritta va solo a chi e' stato davvero separato: chi resta pari
+       con un altro non e' finito li' per lo scontro diretto */
+    fuori.forEach(function(r){ if(r.pari) r.perScontri = false; });
     fuori.cePariMerito = pari;
     return fuori;
   }
@@ -2415,7 +2429,15 @@
       var pst = document.createElement('span');
       pst.className = 'pst'; pst.textContent = r.posto + '°';
       var chi = document.createElement('span');
-      chi.className = 'chi'; chi.textContent = girNomeDi(r.i);
+      chi.className = 'chi';
+      var suoNome = document.createElement('span');
+      suoNome.textContent = girNomeDi(r.i);
+      chi.appendChild(suoNome);
+      if(r.perScontri){
+        var perche = document.createElement('small');
+        perche.textContent = 'scontro diretto';
+        chi.appendChild(perche);
+      }
       var g = document.createElement('span'); g.className = 'num'; g.textContent = String(r.g);
       var vi = document.createElement('span'); vi.className = 'num'; vi.textContent = String(r.v);
       var pt = document.createElement('span'); pt.className = 'pti'; pt.textContent = String(r.pt);
