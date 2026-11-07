@@ -15,6 +15,11 @@ registrazione e niente connessione obbligatoria.
 4. L'organizzatore chiama le coppie una alla volta e tocca la partita
    quando l'ha chiamata, così non perde il segno.
 
+In alto a sinistra ci sono due tasti, **Chiaro** e **Scuro**: il primo è il
+vestito da giorno (carta e rosso), il secondo quello da sera (blu notte e
+arancio), più riposante con le luci basse. Chi non tocca niente riceve
+quello del telefono; chi sceglie, se lo ritrova alla riapertura.
+
 Il sorteggio è casuale davvero: usa i numeri casuali del browser
 (`crypto.getRandomValues`) con un mescolamento Fisher-Yates, quindi ogni
 accoppiamento ha la stessa probabilità. L'unica regola in più è che due Bye

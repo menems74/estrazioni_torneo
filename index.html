@@ -5,34 +5,74 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Estrazione Torneo</title>
 <meta name="description" content="Sorteggio delle coppie del primo turno: sedici giocatori, chi c'è e chi è Bye.">
-<meta name="theme-color" content="#eceae4">
+<meta name="theme-color" content="#f5f3ee">
+<script>
+  /* Prima di tutto il resto, se no si vede un lampo chiaro: il vestito
+     e' quello scelto l'ultima volta, oppure quello del telefono. */
+  (function(){
+    var t;
+    try{ t = localStorage.getItem('estrazione-torneo:tema'); }catch(e){}
+    if(t !== 'chiaro' && t !== 'scuro'){
+      t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'scuro' : 'chiaro';
+    }
+    document.documentElement.setAttribute('data-tema', t);
+  })();
+</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* Stessi colori e stesse forme del portale: questa è una app di casa.
-     La differenza è la misura: lo schermo si guarda dal bancone, non da
-     trenta centimetri, quindi i nomi sono grandi il doppio del solito. */
+  /* Lo schermo si guarda dal bancone, non da trenta centimetri: i nomi
+     sono grandi il doppio del solito.
+
+     I colori hanno due vestiti - "Carta e rosso" di giorno, "Arancio da
+     gara" la sera - e nessuna regola qui sotto nomina mai un colore:
+     chiedono un ruolo (--blocco, --evidenza, --azione, ...). Cambiare
+     tema vuol dire ridipingere i ruoli, tutti insieme. */
   :root{
-    --bg:#eceae4; --ink:#111; --paper:#f3f1ea; --muted:#6b6860; --muted-dark:#a8a59c;
-    --lime:#d7ff3a; --green-live:#b8f35a; --rosso:#d4341f;
-    /* superfici e dettagli: tutto da qui, così si cambia palette in un colpo */
-    /* i ruoli: chi cambia palette tocca solo questi */
-    --blocco:#111;              /* i blocchi pieni: testata, pill, numeri */
-    --su-blocco:#f3f1ea;        /* il testo sopra i blocchi */
-    --evidenza:#d7ff3a;         /* il numero che salta all'occhio */
-    --azione:#d7ff3a;           /* il pulsantone */
-    --su-azione:#111;
-    --carta-spenta:#e5e3dc;     /* le schede di chi è bye */
-    --carta-fatta:#e2e0d8;      /* la partita già chiamata */
-    --scanalatura:#dedbd3;      /* la culla dei tasti presente/bye */
-    --filo:#d5d2ca;             /* i filetti sottili */
-    --ombra-tasto:#a8c82a;      /* lo spessore sotto il pulsantone */
-    --tasto-spento:#d8d5cd;
+    color-scheme:light;
+    --bg:#f5f3ee; --ink:#141414; --paper:#ffffff; --muted:#6e6a64; --muted-dark:#a7a39b;
+    --green-live:#2fa84f; --rosso:#c81d0f;
+    --blocco:#141414;           /* i blocchi pieni: testata, pill, numeri */
+    --su-blocco:#ffffff;        /* il testo sopra i blocchi */
+    --evidenza:#ff4433;         /* il numero che salta all'occhio */
+    --azione:#e02718;           /* il pulsantone */
+    --su-azione:#ffffff;
+    --su-muted:#ffffff;         /* il testo sopra i grigi --muted */
+    --su-muted-dark:#141414;    /*    "      "     "    --muted-dark */
+    --carta-spenta:#efece5;     /* le schede di chi è bye */
+    --carta-fatta:#eae7df;      /* la partita già chiamata */
+    --scanalatura:#eceae3;      /* la culla dei tasti presente/bye */
+    --filo:#ddd9d1;             /* i filetti sottili */
+    --ombra-tasto:#9c1a0f;      /* lo spessore sotto il pulsantone */
+    --tasto-spento:#e3e0d8;
+    --disco:rgba(255,255,255,.3);   /* i tondi - e + dentro la pill scura */
     --radius:28px; --gap:14px;
     --font-display:"Bricolage Grotesque","Inter",sans-serif;
     --font-sans:"Inter","Segoe UI",system-ui,sans-serif;
+  }
+  /* Il vestito scuro. Chi apre la pagina lo riceve se il telefono è in
+     scuro; i due tasti in alto hanno comunque l'ultima parola, e la
+     scelta resta scritta nel browser. */
+  :root[data-tema="scuro"]{
+    color-scheme:dark;
+    --bg:#0f172a; --ink:#ffffff; --paper:#192134; --muted:#93a3bd; --muted-dark:#5b6b86;
+    --green-live:#34d399; --rosso:#f87171;
+    --blocco:#0a0f1c;
+    --su-blocco:#ffffff;
+    --evidenza:#f97316;
+    --azione:#ea580c;
+    --su-azione:#0f172a;
+    --su-muted:#0f172a;
+    --su-muted-dark:#ffffff;
+    --carta-spenta:#212b42;
+    --carta-fatta:#161e30;
+    --scanalatura:#141c2d;
+    --filo:#2e3950;
+    --ombra-tasto:#9a3a08;
+    --tasto-spento:#26324a;
+    --disco:rgba(255,255,255,.14);
   }
   *{box-sizing:border-box;margin:0}
   html{-webkit-text-size-adjust:100%}
@@ -51,7 +91,11 @@
 
   /* --- barra in alto, come nelle altre pagine --- */
   .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;min-height:44px}
-  .conta{font:600 14px var(--font-sans);color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+  .tema{flex:none;display:flex;background:var(--scanalatura);border-radius:999px;padding:3px}
+  .tema button{border:0;background:transparent;border-radius:999px;min-height:40px;padding:0 16px;
+    font:600 14px var(--font-sans);color:var(--muted)}
+  .tema button[aria-pressed="true"]{background:var(--blocco);color:var(--su-blocco)}
+  .conta{margin-left:auto;font:600 14px var(--font-sans);color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
   .conta b{color:var(--ink)}
   .pallino{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green-live);margin-right:6px}
   .pallino.bye{background:var(--muted-dark)}
@@ -66,7 +110,7 @@
   .quanti{display:flex;align-items:center;gap:6px;background:var(--blocco);color:var(--su-blocco);
     border-radius:999px;padding:4px 6px 4px 18px}
   .quanti .etichetta{font:600 14px var(--font-sans);margin-right:4px}
-  .quanti button{width:48px;min-height:48px;border:0;border-radius:50%;background:rgba(127,127,127,.26);
+  .quanti button{width:48px;min-height:48px;border:0;border-radius:50%;background:var(--disco);
     color:var(--su-blocco);font:800 24px/1 var(--font-display)}
   .quanti button:active{background:var(--evidenza);color:var(--blocco)}
   .quanti output{min-width:56px;text-align:center;font:800 26px var(--font-display);
@@ -85,7 +129,7 @@
     flex:none;width:38px;height:38px;border-radius:50%;background:var(--blocco);color:var(--su-blocco);
     display:grid;place-items:center;font:800 16px var(--font-display);
   }
-  .giocatore.assente .num{background:var(--muted-dark);color:var(--blocco)}
+  .giocatore.assente .num{background:var(--muted-dark);color:var(--su-muted-dark)}
   .nome{
     flex:1 1 auto;min-width:0;width:100%;background:transparent;border:0;outline:0;padding:4px 2px;
     font:800 clamp(19px,2.4vw,26px)/1.15 var(--font-display);color:var(--ink);letter-spacing:-.02em;
@@ -99,7 +143,7 @@
     font:600 14px var(--font-sans);color:var(--muted);
   }
   .stato button[aria-pressed="true"]{background:var(--blocco);color:var(--su-blocco)}
-  .stato button.bye[aria-pressed="true"]{background:var(--muted);color:var(--su-blocco)}
+  .stato button.bye[aria-pressed="true"]{background:var(--muted);color:var(--su-muted)}
 
   /* --- la barra con il pulsantone, sempre a portata di pollice --- */
   body.conCoppie .pagina{padding-bottom:210px}
@@ -166,7 +210,9 @@
   }
   .partita.conbye{background:var(--carta-spenta)}
   .partita.conbye .n{background:var(--muted)}
-  .partita.conbye .n b{color:var(--su-blocco)}
+  .partita.conbye .n b{color:var(--su-muted)}
+  .partita.conbye .n span,
+  .partita.riposa .n span{color:var(--su-muted)}
   .chi .g.bye{color:var(--muted)}
   .chi .g small{font:600 .52em/1 var(--font-sans);letter-spacing:.04em;color:var(--muted);white-space:nowrap}
   .passa{
@@ -183,7 +229,7 @@
   .partita.fatta .fatto{display:block}
   .partita.riposa{background:var(--carta-spenta);cursor:default}
   .partita.riposa .n{background:var(--muted)}
-  .partita.riposa .n b{color:var(--su-blocco);font-size:22px}
+  .partita.riposa .n b{color:var(--su-muted);font-size:22px}
 
   @media (max-width:420px){
     .stato button{padding:0 11px;font-size:13px}
@@ -200,6 +246,10 @@
 
 <div class="pagina">
   <div class="top">
+    <div class="tema" role="group" aria-label="Aspetto della pagina">
+      <button type="button" id="temaChiaro" aria-pressed="true">Chiaro</button>
+      <button type="button" id="temaScuro" aria-pressed="false">Scuro</button>
+    </div>
     <p class="conta" id="conta"></p>
   </div>
 
@@ -584,6 +634,36 @@
   document.getElementById('nomiDaCapo').addEventListener('click', function(){
     giocatori = vuoti(giocatori.length); salva(); disegnaElenco();
   });
+
+  /* ------------------------------------------------------- chiaro/scuro -
+     Chi non sceglie segue il telefono, anche se cambia a pagina aperta.
+     Chi sceglie, decide: la preferenza resta scritta nel browser. */
+  var CHIAVE_TEMA = 'estrazione-torneo:tema';
+  var tastoChiaro = document.getElementById('temaChiaro');
+  var tastoScuro  = document.getElementById('temaScuro');
+
+  function vesti(nome, ricorda){
+    document.documentElement.setAttribute('data-tema', nome);
+    tastoChiaro.setAttribute('aria-pressed', String(nome === 'chiaro'));
+    tastoScuro.setAttribute('aria-pressed', String(nome === 'scuro'));
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if(meta){
+      meta.setAttribute('content',
+        getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+    }
+    if(ricorda){ try{ localStorage.setItem(CHIAVE_TEMA, nome); }catch(e){} }
+  }
+  tastoChiaro.addEventListener('click', function(){ vesti('chiaro', true); });
+  tastoScuro.addEventListener('click', function(){ vesti('scuro', true); });
+  vesti(document.documentElement.getAttribute('data-tema') || 'chiaro', false);
+
+  try{
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
+      var scelto = null;
+      try{ scelto = localStorage.getItem(CHIAVE_TEMA); }catch(err){}
+      if(!scelto) vesti(e.matches ? 'scuro' : 'chiaro', false);
+    });
+  }catch(e){ /* browser vecchio: pazienza, resta com'e' */ }
 
   salva();          /* travasa subito la lista vecchia sulla chiave nuova */
   disegnaElenco();
