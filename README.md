@@ -91,6 +91,24 @@ tasto spiega la strada, che lì è a mano: *Condividi* → *Aggiungi a Home*.
 Installata, si apre a tutto schermo senza il browser intorno e funziona
 anche senza linea.
 
+## Portare via una gara
+
+In fondo alla schermata di gara ci sono due tasti.
+
+**Salva una copia** scarica il torneo come file. È la rete di sicurezza:
+se il tablet si rompe o si scarica, da quel file la gara riparte dove
+era. Si riapre da **Riprendi da una copia**, nella schermata dei nomi.
+
+**Passa a un altro apparecchio** crea un link che contiene la gara —
+nomi e risultati — e lo consegna alla condivisione del telefono o agli
+appunti. Non c'è nessun server in mezzo: il torneo viaggia dentro
+l'indirizzo, trecento caratteri circa. Chi lo riceve non se lo vede
+aprire da solo: l'app gli chiede se vuole aprirlo, e dice quante partite
+ci sono già dentro.
+
+Siccome quel link contiene i nomi dei giocatori, l'app lo scrive chiaro
+ogni volta: mandalo solo a chi deve continuare la gara.
+
 ## Cosa c'è dentro
 
 `index.html` è l'app intera: struttura, stile e codice in un file solo,

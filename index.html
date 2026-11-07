@@ -134,6 +134,16 @@
   .ripresa span{font:600 15px var(--font-sans)}
   .ripresa b{font:800 16px var(--font-display);color:var(--evidenza);white-space:nowrap}
 
+  /* --- una gara che arriva da un altro apparecchio: si chiede sempre --- */
+  .invito{background:var(--blocco);color:var(--su-blocco);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:var(--gap)}
+  .invito p{font:600 15px/1.5 var(--font-sans);margin-bottom:12px}
+  .invito b{color:var(--evidenza)}
+  .invito .scelte{display:flex;gap:8px;flex-wrap:wrap}
+  .invito button{border:2px solid var(--su-blocco);background:transparent;color:var(--su-blocco);
+    border-radius:999px;padding:0 16px;min-height:46px;font:600 14px var(--font-sans)}
+  .invito button.si{background:var(--evidenza);border-color:var(--evidenza);color:var(--blocco)}
+
   /* --- testata --- */
   .testata{background:var(--blocco);color:var(--su-blocco);border-radius:var(--radius);padding:26px 24px;margin-bottom:var(--gap)}
   .testa-lista{display:flex;align-items:center;justify-content:space-between;gap:18px}
@@ -567,6 +577,14 @@
 
   <!-- ===== schermata 1: chi c'è ===== -->
   <section id="vistaElenco">
+    <div class="invito" id="invito" hidden>
+      <p id="invitoTesto"></p>
+      <div class="scelte">
+        <button type="button" class="si" id="invitoSi">Apri questa gara</button>
+        <button type="button" id="invitoNo">No, lascia stare</button>
+      </div>
+    </div>
+
     <button type="button" class="ripresa" id="ripresa" hidden>
       <span>C'è una gara in corso</span>
       <b>Riprendi &#8594;</b>
@@ -580,8 +598,10 @@
       <div class="riga">
         <button type="button" id="tuttiPresenti">Tutti presenti</button>
         <button type="button" id="nomiDaCapo">Rimetti i nomi</button>
+        <button type="button" id="riprendiCopia">Riprendi da una copia</button>
       </div>
     </div>
+    <input type="file" id="fileCopia" accept=".json,application/json" hidden>
 
     <div class="elenco" id="elenco"></div>
   </section>
@@ -617,6 +637,13 @@
 
     <h2 class="titoloGara">Classifica</h2>
     <div class="classifica" id="garaClassifica"></div>
+
+    <h2 class="titoloGara">Copia di sicurezza</h2>
+    <div class="dopo">
+      <button type="button" id="salvaCopia">Salva una copia</button>
+      <button type="button" id="passaGara">Passa a un altro apparecchio</button>
+    </div>
+    <p class="nota" id="notaPassa" hidden></p>
 
     <div class="dopo">
       <button type="button" class="chiudi" id="chiudiGara">Chiudi la gara</button>
@@ -682,7 +709,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.3';        // si legge in fondo alla pagina
+  var VERSIONE = '1.4';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
@@ -1260,6 +1287,12 @@
     return s;
   }
   function nomeEBye(i){ return nomeDiSlot(i) + (gara.ordine[i].bye ? ' (bye)' : ''); }
+  function grassetto(testo){
+    var b = document.createElement('b'); b.textContent = testo; return b;
+  }
+  function corsivo(testo){
+    var e = document.createElement('em'); e.textContent = testo; return e;
+  }
 
   /* --------------------------------------------------- i risultati --- */
   function segna(n, lato){
@@ -1389,11 +1422,13 @@
 
       var t = document.createElement('span');
       t.className = 't';
+      t.appendChild(grassetto(nomeEBye(vinto)));
+      t.appendChild(corsivo(e.u ? ' passa: ' : ' batte '));
       if(e.u){
-        t.innerHTML = '<b>' + nomeEBye(vinto) + '</b> <em>passa:</em> ' +
-                      nomeEBye(perso) + ' <em>perde</em>';
+        t.appendChild(grassetto(nomeEBye(perso)));
+        t.appendChild(corsivo(' perde'));
       }else{
-        t.innerHTML = '<b>' + nomeEBye(vinto) + '</b> <em>batte</em> ' + nomeEBye(perso);
+        t.appendChild(document.createTextNode(nomeEBye(perso)));
       }
       riga.appendChild(t);
 
@@ -1439,8 +1474,12 @@
     if(finita()){
       var primo = classifica.filter(function(x){ return x.posto === 1; })[0];
       vinta.hidden = false;
-      vinta.innerHTML = '<small>Ha vinto il torneo</small><b>' +
-                        (primo ? nomeEBye(primo.chi) : '') + '</b>';
+      vinta.innerHTML = '';
+      var occhiello = document.createElement('small');
+      occhiello.textContent = 'Ha vinto il torneo';
+      var chi = document.createElement('b');
+      chi.textContent = primo ? nomeEBye(primo.chi) : '';
+      vinta.appendChild(occhiello); vinta.appendChild(chi);
     }else{
       vinta.hidden = true;
     }
@@ -1457,8 +1496,11 @@
       classifica.forEach(function(r){
         var riga = document.createElement('div');
         riga.className = 'posto' + (r.posto === 1 ? ' oro' : '');
-        riga.innerHTML = '<span class="pp">' + r.posto + '°</span>' +
-                         '<span class="nn">' + nomeEBye(r.chi) + '</span>';
+        var pp = document.createElement('span');
+        pp.className = 'pp'; pp.textContent = r.posto + '°';
+        var nn = document.createElement('span');
+        nn.className = 'nn'; nn.textContent = nomeEBye(r.chi);
+        riga.appendChild(pp); riga.appendChild(nn);
         cl.appendChild(riga);
       });
     }
@@ -1725,6 +1767,215 @@
     window.print();
   });
 
+
+  /* ===================================================================
+     PORTARE VIA UNA GARA
+
+     Due modi, per due problemi diversi. Il file e' la rete di sicurezza:
+     resta dove lo metti tu e serve se l'apparecchio si rompe. Il link
+     serve a passare la gara a un altro telefono, e contiene i nomi e i
+     risultati: non e' un indirizzo qualunque, e l'app lo dice prima di
+     consegnarlo.
+
+     Chi riceve non vede mai la gara aprirsi da sola: gli viene chiesto.
+     I dati che arrivano da fuori vengono controllati uno per uno, e i
+     nomi finiscono a schermo come testo, mai come pezzi di pagina.
+     =================================================================== */
+
+  function pacchetto(){
+    var bye = 0, nomi = [];
+    gara.ordine.forEach(function(g, i){
+      nomi.push(g.nome);
+      if(g.bye) bye |= (1 << i);
+    });
+    /* si portano solo i risultati decisi da una persona: quelli dei bye
+       si richiudono da soli dall'altra parte */
+    var mani = [];
+    Object.keys(gara.esiti).map(Number)
+      .sort(function(x, y){ return gara.esiti[x].q - gara.esiti[y].q; })
+      .forEach(function(n){ if(!gara.esiti[n].u) mani.push(n + gara.esiti[n].v); });
+    return { f:FORMATO, v:FORMATO_V, t:gara.nata, n:nomi, b:bye, e:mani.join('.') };
+  }
+
+  function daPacchetto(p){
+    if(!p || typeof p !== 'object') return null;
+    if(p.f !== FORMATO || (p.v || 1) > FORMATO_V) return null;
+    if(!Array.isArray(p.n) || p.n.length !== 16) return null;
+    var bye = +p.b || 0;
+    var ordine = p.n.map(function(nome, i){
+      return { nome: String(nome == null ? '' : nome).slice(0, 40), bye: !!(bye & (1 << i)) };
+    });
+    var esiti = {}, passo = 1, storto = false;
+    String(p.e || '').split('.').forEach(function(pezzo){
+      if(!pezzo) return;
+      var m = /^([0-9]{1,2})([ab])$/.exec(pezzo);
+      if(!m){ storto = true; return; }
+      var n = +m[1];
+      if(n < 1 || n > 31 || esiti[n]){ storto = true; return; }
+      esiti[n] = { v:m[2], u:false, q:passo++ };
+    });
+    if(storto) return null;
+    return { formato:FORMATO, v:FORMATO_V, nata:+p.t || Date.now(),
+             ordine:ordine, esiti:esiti, passo:passo };
+  }
+
+  /* base64 che sta in un indirizzo senza farsi storpiare */
+  function impacchetta(o){
+    var byte = new TextEncoder().encode(JSON.stringify(o));
+    var testo = '';
+    for(var i = 0; i < byte.length; i++) testo += String.fromCharCode(byte[i]);
+    return btoa(testo).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function spacchetta(t){
+    try{
+      var b = String(t).replace(/-/g, '+').replace(/_/g, '/');
+      while(b.length % 4) b += '=';
+      var grezzo = atob(b), byte = new Uint8Array(grezzo.length);
+      for(var i = 0; i < grezzo.length; i++) byte[i] = grezzo.charCodeAt(i);
+      return JSON.parse(new TextDecoder().decode(byte));
+    }catch(e){ return null; }
+  }
+
+  function quandoFatto(p){
+    var n = 0;
+    Object.keys(p.esiti || {}).forEach(function(k){ if(!p.esiti[k].u) n++; });
+    return n;
+  }
+
+  /* -------------------------------------------------- il file di copia -- */
+  document.getElementById('salvaCopia').addEventListener('click', function(){
+    if(!gara) return;
+    var d = new Date();
+    function due(n){ return (n < 10 ? '0' : '') + n; }
+    var nome = 'torneo-' + d.getFullYear() + due(d.getMonth() + 1) + due(d.getDate()) +
+               '-' + due(d.getHours()) + due(d.getMinutes()) + '.json';
+    var pezzo = new Blob([JSON.stringify(pacchetto(), null, 1)], { type:'application/json' });
+    var via = URL.createObjectURL(pezzo);
+    var a = document.createElement('a');
+    a.href = via; a.download = nome;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(via); }, 4000);
+    diNota('Copia salvata come <b>' + nome + '</b>. Tienila da parte: ' +
+           'si riapre da «Riprendi da una copia», nella schermata dei nomi.');
+  });
+
+  document.getElementById('riprendiCopia').addEventListener('click', function(){
+    document.getElementById('fileCopia').click();
+  });
+  document.getElementById('fileCopia').addEventListener('change', function(){
+    var f = this.files && this.files[0];
+    this.value = '';
+    if(!f) return;
+    var lettore = new FileReader();
+    lettore.onload = function(){
+      var p;
+      try{ p = JSON.parse(lettore.result); }catch(e){ p = null; }
+      var nuova = daPacchetto(p);
+      if(!nuova){
+        disegnaAllarme('Quella copia non si legge: o non è di questa app, ' +
+                       'o è di un tipo di torneo diverso.');
+        return;
+      }
+      proponi(nuova, 'da una copia salvata');
+    };
+    lettore.readAsText(f);
+  });
+
+  /* ------------------------------------------------ il link di passaggio */
+  document.getElementById('passaGara').addEventListener('click', function(){
+    if(!gara) return;
+    var via = location.origin + location.pathname + '#g=' + impacchetta(pacchetto());
+    var fatte = quandoFatto(gara);
+    var detto = 'Estrazione Torneo — gara in corso, ' + fatte +
+                (fatte === 1 ? ' partita segnata' : ' partite segnate');
+    if(navigator.share){
+      navigator.share({ title:'Estrazione Torneo', text:detto, url:via }).catch(function(){});
+      diNota('Il link porta con sé i nomi dei giocatori e i risultati: ' +
+             'mandalo solo a chi deve continuare la gara.');
+      return;
+    }
+    var copiato = function(){
+      diNota('Link copiato. Porta con sé i nomi dei giocatori e i risultati: ' +
+             'incollalo solo a chi deve continuare la gara.');
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(via).then(copiato).catch(function(){ mostraLink(via); });
+    }else{
+      mostraLink(via);
+    }
+  });
+
+  function mostraLink(via){
+    var n = document.getElementById('notaPassa');
+    n.hidden = false;
+    n.textContent = '';
+    var p = document.createElement('span');
+    p.textContent = 'Copia questo indirizzo e mandalo a chi continua la gara. ' +
+                    'Contiene i nomi dei giocatori e i risultati. ';
+    var campo = document.createElement('input');
+    campo.type = 'text'; campo.readOnly = true; campo.value = via;
+    campo.style.cssText = 'width:100%;margin-top:8px;padding:10px;border-radius:10px;' +
+                          'border:2px solid var(--filo);background:var(--paper);color:var(--ink);' +
+                          'font:500 12px var(--font-sans)';
+    n.appendChild(p); n.appendChild(campo);
+    campo.focus(); campo.select();
+  }
+  function diNota(html){
+    var n = document.getElementById('notaPassa');
+    n.hidden = false;
+    n.innerHTML = html;          /* solo testo nostro, mai nomi */
+  }
+
+  /* ------------------------------------------ chi riceve decide sempre -- */
+  var inArrivo = null;
+
+  function proponi(nuova, provenienza){
+    inArrivo = nuova;
+    var fatte = quandoFatto(nuova);
+    var t = document.getElementById('invitoTesto');
+    t.textContent = '';
+    t.appendChild(document.createTextNode('Arriva una gara ' + provenienza + ': '));
+    var b = document.createElement('b');
+    b.textContent = fatte + (fatte === 1 ? ' partita segnata' : ' partite segnate');
+    t.appendChild(b);
+    t.appendChild(document.createTextNode(
+      gara ? '. Aprendola, la gara che hai qui viene cancellata.'
+           : '. Vuoi aprirla su questo apparecchio?'));
+    document.getElementById('invito').hidden = false;
+    if(vistaOra !== 'elenco') sostituisci('elenco');
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('invitoSi').addEventListener('click', function(){
+    if(!inArrivo) return;
+    gara = inArrivo; inArrivo = null;
+    salvaGara();
+    document.getElementById('invito').hidden = true;
+    vaiA('gara');
+  });
+  document.getElementById('invitoNo').addEventListener('click', function(){
+    inArrivo = null;
+    document.getElementById('invito').hidden = true;
+  });
+
+  /* Se il link arriva a pagina gia' aperta, cambia solo la coda
+     dell'indirizzo e la pagina non si ricarica: va intercettato. */
+  window.addEventListener('hashchange', function(){
+    var nuova = garaNellIndirizzo();
+    if(nuova) proponi(nuova, 'da un altro apparecchio');
+  });
+
+  /* L'indirizzo con la gara dentro si legge una volta sola e poi si
+     pulisce, cosi' ricaricando non si ripresenta. */
+  function garaNellIndirizzo(){
+    var h = location.hash || '';
+    if(h.indexOf('#g=') !== 0) return null;
+    var nuova = daPacchetto(spacchetta(h.slice(3)));
+    try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+    if(!nuova) disegnaAllarme('Quel link non si legge: forse si è spezzato per strada.');
+    return nuova;
+  }
+
   /* ------------------------------------------------- installa in tasca -
      Android avvisa il browser con beforeinstallprompt: allora il tasto
      compare e apre la finestra vera. iPhone non lo fa, lo si aggiunge a
@@ -1810,8 +2061,10 @@
   salva();          /* travasa subito la lista vecchia sulla chiave nuova */
   document.getElementById('versione').textContent = 'v' + VERSIONE;
   sostituisci('elenco');
-  if(gara) vaiA('gara');   /* una gara aperta si riprende da dov'era,
-                              e il tasto indietro riporta all'elenco */
+  var arrivata = garaNellIndirizzo();
+  if(arrivata) proponi(arrivata, 'da un altro apparecchio');
+  else if(gara) vaiA('gara');   /* una gara aperta si riprende da dov'era,
+                                   e il tasto indietro riporta all'elenco */
 })();
 </script>
 </body>
