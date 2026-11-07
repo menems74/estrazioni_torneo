@@ -204,7 +204,7 @@
     text-transform:uppercase;color:var(--muted);margin-bottom:10px}
   .formato h3{font:800 clamp(22px,5vw,28px)/1.1 var(--font-display);letter-spacing:-.02em;
     margin-bottom:8px;max-width:16ch}
-  .formato p{font:400 14px/1.5 var(--font-sans);color:var(--muted);max-width:40ch}
+  .formato p{font:600 15px var(--font-sans);color:var(--muted);letter-spacing:.01em}
   .formato .go{position:absolute;right:20px;top:20px;width:44px;height:44px;border-radius:50%;
     background:var(--azione);color:var(--su-azione);display:grid;place-items:center;
     font:800 20px var(--font-display)}
@@ -631,7 +631,7 @@
   <!-- ===== schermata 0: che torneo si organizza ===== -->
   <section id="vistaScelta" hidden>
     <div class="testata testa-lista">
-      <h1>Che torneo organizzi?</h1>
+      <h1>Tipo torneo</h1>
       <svg class="marchio" viewBox="0 0 100 100" aria-hidden="true"><use href="#bersaglio"/></svg>
     </div>
 
@@ -639,16 +639,14 @@
       <button type="button" class="formato" id="scegliTabellone">
         <span class="eti">16 giocatori · 31 partite</span>
         <h3>Tabellone 16 doppio K.O.</h3>
-        <p>Si esce alla seconda sconfitta. Girone vincenti, girone perdenti,
-           e chi arriva dai perdenti deve vincere due volte la finale.</p>
+        <p>Dart Master</p>
         <span class="go" aria-hidden="true">&#8594;</span>
       </button>
 
       <button type="button" class="formato spento" id="scegliGirone" disabled>
         <span class="eti" id="etiGirone">In arrivo</span>
         <h3>Girone all'italiana</h3>
-        <p>Tutti contro tutti, una partita per coppia, classifica a punti.
-           Da tre a dieci giocatori.</p>
+        <p>Tutti contro tutti</p>
         <span class="go" aria-hidden="true">&#8594;</span>
       </button>
     </div>
@@ -843,7 +841,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.5';        // si legge in fondo alla pagina
+  var VERSIONE = '1.6';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
