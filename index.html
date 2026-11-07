@@ -637,14 +637,14 @@
 
     <div class="formati">
       <button type="button" class="formato" id="scegliTabellone">
-        <span class="eti">16 giocatori · 31 partite</span>
+        <span class="eti">16 giocatori</span>
         <h3>Tabellone 16 doppio K.O.</h3>
         <p>Dart Master</p>
         <span class="go" aria-hidden="true">&#8594;</span>
       </button>
 
       <button type="button" class="formato spento" id="scegliGirone" disabled>
-        <span class="eti" id="etiGirone">In arrivo</span>
+        <span class="eti" id="etiGirone">Da 3 a 16 giocatori</span>
         <h3>Girone all'italiana</h3>
         <p>Tutti contro tutti</p>
         <span class="go" aria-hidden="true">&#8594;</span>
@@ -841,7 +841,7 @@
 (function(){
   'use strict';
 
-  var VERSIONE = '1.6';        // si legge in fondo alla pagina
+  var VERSIONE = '1.7';        // si legge in fondo alla pagina
   var QUANTI = 16;             // il tabellone e' sempre da sedici caselle
 
   /* --------------------------------------------------------- l'archivio -
@@ -2141,7 +2141,7 @@
   var CHIAVE_GIR = 'estrazione-torneo:girone';
   var CHIAVE_GIR_NOMI = 'estrazione-torneo:girone-nomi';
   var CHIAVE_PROVA = 'estrazione-torneo:in-prova';
-  var GIR_MIN = 3, GIR_MAX = 10, GIR_PREDEF = 6;
+  var GIR_MIN = 3, GIR_MAX = 16, GIR_PREDEF = 6;
   var PUNTI_VITTORIA = 2;
   var FORMATO_GIR = 'girone', FORMATO_GIR_V = 1;
 
@@ -2525,10 +2525,10 @@
     var aperto = gironeAperto();
     tasto.disabled = !aperto;
     tasto.classList.toggle('spento', !aperto);
-    document.getElementById('etiGirone').textContent = !aperto ? 'In arrivo'
-      : (girone ? 'Girone in corso · riprendi' : 'In prova · da 3 a 10 giocatori');
+    document.getElementById('etiGirone').textContent =
+      girone ? 'Girone in corso' : 'Da ' + GIR_MIN + ' a ' + GIR_MAX + ' giocatori';
     document.querySelector('#scegliTabellone .eti').textContent =
-      gara ? 'Gara in corso · riprendi' : '16 giocatori · 31 partite';
+      gara ? 'Gara in corso' : '16 giocatori';
   }
   document.getElementById('scegliTabellone').addEventListener('click', function(){
     if(gara) vaiA('gara'); else vaiA('elenco');

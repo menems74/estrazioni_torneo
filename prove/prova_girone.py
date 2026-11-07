@@ -49,7 +49,9 @@ def il_tasto_e_spento(ctx, sito, dire):
     assert a.vista() == "scelta", a.vista()
     tasto = a.pg.locator("#scegliGirone")
     assert tasto.is_disabled(), "il girone non doveva essere ancora cliccabile"
-    assert "arrivo" in a.pg.locator("#etiGirone").inner_text().lower()
+    assert "16 giocatori" in a.pg.locator("#etiGirone").inner_text().lower()
+    # inner_text torna in maiuscolo: e' il CSS che le scrive cosi'
+    assert a.pg.locator("#scegliTabellone .eti").inner_text().strip().lower() == "16 giocatori"
     a.pg.click("#scegliTabellone"); a.pg.wait_for_timeout(300)
     assert a.vista() == "elenco", "il tabellone invece si apre"
     a.chiudi()
@@ -165,5 +167,23 @@ def annulla_e_riprende(ctx, sito, dire):
     a.chiudi()
 
 
-PROVE = [il_tasto_e_spento, calendario_pari, calendario_dispari,
+def fino_a_sedici(ctx, sito, dire):
+    a = _apri(ctx, sito, quanti=16)
+    assert a.pg.locator("#girTotali").inner_text() == "120", \
+        "sedici giocatori fanno 120 partite, non %s" % a.pg.locator("#girTotali").inner_text()
+    P = _partite(a)
+    assert len(P) == 120
+    turni = {}
+    for p in P:
+        turni.setdefault(p["turno"], []).append(p["nomi"])
+    assert len(turni) == 15, len(turni)
+    for turno, partite in turni.items():
+        assert len(partite) == 8, (turno, len(partite))
+        dentro = [n for coppia in partite for n in coppia]
+        assert len(set(dentro)) == 16, "%s: qualcuno gioca due volte" % turno
+    a.chiudi()
+    dire("sedici giocatori: 120 partite in 15 turni da otto")
+
+
+PROVE = [il_tasto_e_spento, calendario_pari, calendario_dispari, fino_a_sedici,
          girone_intero, scontro_diretto, annulla_e_riprende]

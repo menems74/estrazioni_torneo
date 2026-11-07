@@ -89,7 +89,7 @@ gara di domani non viene letta con le regole di ieri.
 
 ## Il girone all'italiana — in prova
 
-Tutti contro tutti, una partita per coppia, da tre a dieci giocatori.
+Tutti contro tutti, una partita per coppia, da tre a sedici giocatori.
 Vittoria 2 punti, sconfitta 0, nessun pareggio: alle freccette una
 partita finisce sempre con un vincitore. A pari punti conta lo scontro
 diretto; se anche quello è pari, l'app lo scrive invece di inventarsi un
